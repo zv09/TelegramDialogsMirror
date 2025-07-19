@@ -1,3 +1,4 @@
 telethon
 pydantic-settings
 loguru
+python-dotenv
