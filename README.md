@@ -1,10 +1,10 @@
 # Telegram Dialogs Mirror
 
+[![Donate](https://img.shields.io/badge/Donate-Support%20Project-blue.svg)](./README.md#support)
 ![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/tags)
-<!-- [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat-square&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/YOUR_USERNAME) -->
 
 This is a Python script that forwards messages from specified source Telegram channels to target Telegram channels. It is built using `telethon` and `pydantic-settings` for robust configuration management.
 
@@ -111,7 +111,7 @@ sessions/            # Directory for Telethon session files
 cache/               # Directory for cached message data
 ```
 
-## Support the Project
+## Support the Project <a name="support"></a>
 
 If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
 
