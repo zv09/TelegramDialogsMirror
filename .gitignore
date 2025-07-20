@@ -104,3 +104,9 @@ DerivedData
 # CocoaPods
 /Pods
 cache/
+
+# Temp / TMP
+/temp/
+temp/
+temp/*
+*.tmp
