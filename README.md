@@ -115,24 +115,7 @@ cache/               # Directory for cached message data
 
 If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
 
-### Binance Smart Chain (BSC / BEP-20)
-
-**Important:** Please ensure you are sending funds via the **BSC (BEP-20) network**.
-
-| Coin | Address (BSC / BEP-20) | QR Code |
-| :--- | :--- | :--- |
-| **BNB** | `YOUR_BSC_WALLET_ADDRESS` | *Coming Soon* |
-| **ETH** (Binance-Peg) | `YOUR_BSC_WALLET_ADDRESS` | *Coming Soon* |
-| **USDT**| `YOUR_BSC_WALLET_ADDRESS` | *Coming Soon* |
-
-### TRON Network (TRC-20)
-
-**Important:** Please ensure you are sending funds via the **TRON (TRC-20) network**.
-
-| Coin | Address (TRC-20) | QR Code |
-| :--- | :--- | :--- |
-| **TRX** | `YOUR_TRON_WALLET_ADDRESS` | *Coming Soon* |
-| **USDT**| `YOUR_TRON_WALLET_ADDRESS` | *Coming Soon* |
+For more information on how to donate, please see the [Donations page](docs/donations.md).
 
 ## Contributing
 
