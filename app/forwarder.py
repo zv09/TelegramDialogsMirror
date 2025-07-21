@@ -41,6 +41,28 @@ class Forwarder:
             logger.warning(f"Could not get name for entity {entity_id}: {e}")
             return "(Unknown)"
 
+    async def _send_message(self, target_channel_id, message, source_channel_id):
+        """Centralized method to send or forward a message."""
+        signature_data = f"{source_channel_id}.{message.id}".encode()
+        signature_button = Button.inline(" ", data=signature_data)
+
+        if isinstance(message, MessageService):
+            logger.info(f"System message in {source_channel_id}. Forwarding placeholder.")
+            text = f"System Message: {message.text}"
+            await self.client.send_message(target_channel_id, text, buttons=signature_button)
+        else:
+            sender = await message.get_sender()
+            sender_name = await self._get_dialog_name(sender.id)
+            logger.info(f"Forwarding message {message.id} from {source_channel_id} to {target_channel_id}.")
+            
+            header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {message.date.isoformat().replace('T', ' ')}"
+            caption = f"{header}\n\n{message.text or ''}"
+
+            if message.media and not isinstance(message.media, MessageMediaWebPage):
+                await self.client.send_file(target_channel_id, message.media, caption=caption, buttons=signature_button)
+            else:
+                await self.client.send_message(target_channel_id, caption, link_preview=True, buttons=signature_button)
+
     async def message_handler(self, event):
         """Handles new messages from a source channel and forwards them to the target."""
         message = event.message
@@ -52,25 +74,7 @@ class Forwarder:
             return
 
         try:
-            signature_data = f"{source_channel_id}.{message.id}".encode()
-            signature_button = Button.inline(" ", data=signature_data)
-
-            if isinstance(message, MessageService):
-                logger.info(f"System message in {source_channel_id}. Forwarding placeholder.")
-                text = f"System Message: {message.text}"
-                await self.client.send_message(target_channel_id, text, buttons=signature_button)
-            else:
-                sender = await message.get_sender()
-                sender_name = await self._get_dialog_name(sender.id)
-                logger.info(f"Forwarding message {message.id} from {source_channel_id} to {target_channel_id}.")
-                
-                header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {message.date.isoformat().replace('T', ' ')}"
-                caption = f"{header}\n\n{message.text or ''}"
-
-                if message.media and not isinstance(message.media, MessageMediaWebPage):
-                    await self.client.send_file(target_channel_id, message.media, caption=caption, buttons=signature_button)
-                else:
-                    await self.client.send_message(target_channel_id, caption, link_preview=True, buttons=signature_button)
+            await self._send_message(target_channel_id, message, source_channel_id)
 
             # Live-update the cache using the unified key
             cache_key = self.cache_manager.get_channel_state_key(source_channel_id)
@@ -81,24 +85,31 @@ class Forwarder:
         except Exception as e:
             logger.error(f"An unexpected error occurred while handling message {message.id}: {e}")
 
-    async def run(self, shutdown_event: asyncio.Event):
+    async def run(self, shutdown_event: asyncio.Event, synchronizer):
         """Runs the Telegram client and listens for messages."""
         logger.info("Client starting...")
-        try:
-            await self.client.start()
-            logger.info("Client started successfully. Listening for messages...")
+        while not shutdown_event.is_set():
+            try:
+                await self.client.start()
+                logger.info("Client started successfully. Listening for messages...")
 
-            for source_channel, target_channel in self.settings.CHANNEL_MAPPINGS:
-                self.client.add_event_handler(self.message_handler, events.NewMessage(chats=source_channel))
-                source_name = await self._get_dialog_name(source_channel)
-                target_name = await self._get_dialog_name(target_channel)
-                logger.info(f"Registered handler: {source_name} (ID: {source_channel}) -> {target_name} (ID: {target_channel})")
+                for source_channel, target_channel in self.settings.CHANNEL_MAPPINGS:
+                    self.client.add_event_handler(self.message_handler, events.NewMessage(chats=source_channel))
+                    source_name = await self._get_dialog_name(source_channel)
+                    target_name = await self._get_dialog_name(target_channel)
+                    logger.info(f"Registered handler: {source_name} (ID: {source_channel}) -> {target_name} (ID: {target_channel})")
 
-            logger.info("Awaiting new events...")
-            await shutdown_event.wait()
-        except Exception as e:
-            logger.error(f"An unexpected error occurred: {e}")
-        finally:
-            if self.client.is_connected():
-                await self.client.disconnect()
-            logger.info("Client stopped.")
+                logger.info("Awaiting new events...")
+                await shutdown_event.wait()
+            except telethon.errors.rpcerrorlist.PersistentTimestampOutdatedError:
+                logger.warning("Persistent timestamp outdated. Triggering full resynchronization...")
+                for source, target in self.settings.CHANNEL_MAPPINGS:
+                    await synchronizer.synchronize(source, target, shutdown_event)
+                logger.info("Resynchronization complete. Restarting live forwarding...")
+            except Exception as e:
+                logger.error(f"An unexpected error occurred: {e}")
+                break  # Exit on other unexpected errors
+            finally:
+                if self.client.is_connected():
+                    await self.client.disconnect()
+                logger.info("Client stopped.")

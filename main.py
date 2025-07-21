@@ -47,7 +47,7 @@ async def main():
                 await synchronizer.synchronize(source, target, shutdown_event)
             logger.info("Message synchronization complete.")
         else:
-            await forwarder.run(shutdown_event)
+            await forwarder.run(shutdown_event, synchronizer)
     except asyncio.CancelledError:
         logger.info("Application shutdown forcefully.")
     finally:

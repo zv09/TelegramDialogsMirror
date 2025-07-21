@@ -95,20 +95,7 @@ class MessageSynchronizer:
                         logger.warning("Shutdown signal received, stopping synchronization.")
                         return
                     try:
-                        signature_data = f"{source_channel_id}.{message.id}".encode()
-                        signature_button = Button.inline(" ", data=signature_data)
-
-                        if isinstance(message, MessageService):
-                            text = f"System Message: {message.text}"
-                            await self.client.send_message(target_channel_id, text, buttons=signature_button)
-                        else:
-                            sender_name = await self.forwarder._get_dialog_name(message.sender_id)
-                            header = f"ID: {message.sender_id} | Author: {sender_name}\ndatetime: {message.date.isoformat().replace('T', ' ')}"
-                            caption = f"{header}\n\n{message.text or ''}"
-                            if message.media and not isinstance(message.media, MessageMediaWebPage):
-                                await self.client.send_file(target_channel_id, message.media, caption=caption, buttons=signature_button)
-                            else:
-                                await self.client.send_message(target_channel_id, caption, link_preview=True, buttons=signature_button)
+                        await self.forwarder._send_message(target_channel_id, message, source_channel_id)
                         logger.info(f"Resent message {message.id} from {source_channel_id}.")
                         await asyncio.sleep(self.forwarder.settings.SEND_DELAY)
                     except Exception as e:
