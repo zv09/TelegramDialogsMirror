@@ -15,7 +15,7 @@ from app.synchronizer import MessageSynchronizer
 from app.cache import CacheManager
 
 class Launcher:
-    """Orchestrates the application startup and execution flow."""
+    """Orchestrates the application startup, execution flow, and shutdown."""
 
     def __init__(self):
         self.args = parse_args()
