@@ -13,6 +13,7 @@ from app.client import create_telegram_client
 from app.forwarder import Forwarder
 from app.synchronizer import MessageSynchronizer
 from app.cache import CacheManager
+from app.stats import stats_manager
 
 class Launcher:
     """Orchestrates the application startup, execution flow, and shutdown."""
@@ -62,4 +63,5 @@ class Launcher:
             if self.forwarder.client.is_connected():
                 await self.forwarder.client.disconnect()
                 logger.info("Telegram client disconnected.")
+            stats_manager.log_summary()
             logger.info("Application has shut down.")

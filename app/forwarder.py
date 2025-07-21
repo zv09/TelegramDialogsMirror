@@ -80,10 +80,12 @@ class Forwarder:
             cache_key = self.cache_manager.get_channel_state_key(source_channel_id)
             self.cache_manager.append_to_list(cache_key, message.id)
             logger.info(f"Successfully forwarded message {message.id} and updated cache.")
+            stats_manager.increment_forward_success()
             await asyncio.sleep(1)
 
         except Exception as e:
             logger.error(f"An unexpected error occurred while handling message {message.id}: {e}")
+            stats_manager.increment_forward_failure()
 
     async def run(self, shutdown_event: asyncio.Event, synchronizer):
         """Runs the Telegram client and listens for messages."""

@@ -101,9 +101,11 @@ class MessageSynchronizer:
                     try:
                         await self.forwarder._send_message(target_channel_id, message, source_channel_id)
                         logger.info(f"Resent message {message.id} from {source_channel_id}.")
+                        stats_manager.add_messages_resent(1)
                         await asyncio.sleep(self.forwarder.settings.SEND_DELAY)
                     except Exception as e:
                         logger.error(f"Failed to resend message {message.id}: {e}")
+                        stats_manager.increment_forward_failure()
                 
                 logger.info("Batch sent. Pausing for 5 seconds...")
                 await asyncio.sleep(5)
