@@ -4,6 +4,7 @@
 ![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/releases/latest)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/tags)
 
 ## [Support the Project](docs/donations.md) <a name="support"></a>
@@ -102,13 +103,16 @@ This mode will:
 .gitignore           # Git ignore file
 README.md            # This README file
 requirements.txt     # Python dependencies
-main.py              # Main application launcher
+main.py              # Minimalist application entry point
 env_example.txt      # Example environment variables file
 
 app/
+├── launcher.py      # Main application orchestrator
+├── arguments.py     # Handles command-line argument parsing
 ├── forwarder.py     # Handles live message forwarding
 ├── synchronizer.py  # Handles the --copy synchronization logic
-└── cache.py         # Manages disk-based caching
+├── cache.py         # Manages disk-based caching
+└── utils.py         # Shared utilities (e.g., error handling decorators)
 
 config/
 ├── config.py        # Pydantic settings class

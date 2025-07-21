@@ -1,35 +1,33 @@
-#pylint
+# Pylint files
 .pylintrc
 
-#tags file 
+# Tags files
 tags.txt
+.tags.txt
 
-# Environment variables
-.env
-
-# Log and session files
+# Log files
 logs/
 logs/*
 *.log
 *.logs
 
-# Версионные файлы
+# Version files
 *.egg-info/
 dist/
 build/
 
-# Environment
+# Environment files
 .env
 .venv
 venv/
 env/
 
-# Cache
+# Cache files
 cache/
 *.cache
 /cache/
 
-# Python
+# Python files
 __pycache__/
 *.pyc
 *.pyo
@@ -38,48 +36,58 @@ __pycache__/
 *.so
 .Python
 
-# IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# System
+# System files
 .DS_Store
 Thumbs.db
 
-# bash / zsh
+# SHELL files
 *.sh
 *.zsh
+*.fish
+*.bash
 
-# Json
+# JSON files
 /json/
 /json/*
 *.json
 
-# Sessions
+# SESSION files
 /sessions/
 /sessions/*
 *.sessions
 *.session-journal
 
-# Temp
+# Backup files
+backup/
 /backup/
 /backup/*
+*.7z
+*.zip
+*.tar
 
-# Commit message
+# Commit message files
+.commit.msg
 commit.msg
 commit_message.txt
+.commit_message.txt
+.commit_message
+commit_message
 .gitmessage
-.gitmessage
+gitmessage
+commit.txt
+.commit.txt
 
-# Xcode projects
+# Xcode projects files
 /xcode/
 /xcode/*
 /.xcode/
 /.xcode/*
-
-# Xcode
 */build/*
 *.pbxuser
 !default.pbxuser
@@ -98,17 +106,18 @@ DerivedData
 *.xcuserstate
 *.xcscmblueprint
 
-# Swift Package Manager
+# Swift Package Manager files
 /.build
 /Packages
 /*.xcodeproj
 
-# CocoaPods
+# CocoaPods files
 /Pods
 cache/
 
-# Temp / TMP
+# TEMP files
 /temp/
 temp/
 temp/*
 *.tmp
+*.~tmp
