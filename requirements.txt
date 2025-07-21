@@ -2,3 +2,4 @@ telethon
 pydantic-settings
 loguru
 python-dotenv
+bump-my-version

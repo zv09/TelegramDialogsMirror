@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Tuple
 
+from app.__version__ import __version__
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
@@ -20,7 +22,7 @@ class Settings(BaseSettings):
     AUTO_RECONNECT: bool = True
     DEVICE_MODEL: str = "pyTgForwarder"
     SYSTEM_VERSION: str = "Python 3"
-    APP_VERSION: str = "1.0.0"
+    APP_VERSION: str = __version__
     LANG_CODE: str = 'ru'
     RECEIVE_UPDATES: bool = True
     LOG_TELETHON_DIFFERENCES: bool = True
