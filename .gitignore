@@ -70,6 +70,8 @@ Thumbs.db
 # Commit message
 commit.msg
 commit_message.txt
+.gitmessage
+.gitmessage
 
 # Xcode projects
 /xcode/

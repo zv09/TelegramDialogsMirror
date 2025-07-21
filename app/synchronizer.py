@@ -6,6 +6,8 @@ from loguru import logger
 
 from app.cache import CacheManager
 
+from app.utils import retry_on_telegram_error
+
 class MessageSynchronizer:
     """Synchronizes messages between a source and target channel."""
 
@@ -25,6 +27,7 @@ class MessageSynchronizer:
         except (AttributeError, IndexError, ValueError):
             return None
 
+    @retry_on_telegram_error()
     async def _get_source_state(self, channel_id):
         """Fetches the state of the source channel, returning a list of message IDs."""
         cache_key = self.cache_manager.get_channel_state_key(channel_id)
@@ -39,13 +42,14 @@ class MessageSynchronizer:
         logger.info(f"Fetched and cached state for source channel {channel_id}.")
         return message_ids
 
+    @retry_on_telegram_error()
     async def synchronize(self, source_channel_id: int, target_channel_id: int, shutdown_event: asyncio.Event):
         logger.info(f"Starting synchronization: {source_channel_id} -> {target_channel_id}")
 
         source_message_ids = await self._get_source_state(source_channel_id)
         
         logger.info(f"Fetching live state for destination channel {target_channel_id}.")
-        all_target_msgs = await self.client.get_messages(target_channel_id, limit=None)
+        all_target_msgs = await retry_on_telegram_error()(self.client.get_messages)(target_channel_id, limit=None)
 
         source_message_ids.reverse()
         all_target_msgs.reverse()
@@ -74,7 +78,7 @@ class MessageSynchronizer:
             logger.info(f"Target channel has {len(all_target_msgs) - divergence_index} incorrect messages. Deleting them.")
             target_msgs_to_delete = [msg.id for msg in all_target_msgs[divergence_index:]]
             if target_msgs_to_delete:
-                await self.client.delete_messages(target_channel_id, target_msgs_to_delete)
+                await retry_on_telegram_error()(self.client.delete_messages)(target_channel_id, target_msgs_to_delete)
 
         resend_count = len(source_message_ids) - divergence_index
         if resend_count > 0:

@@ -12,6 +12,8 @@ from loguru import logger
 from config.config import Settings
 from app.cache import CacheManager
 
+from app.utils import retry_on_telegram_error
+
 class Forwarder:
     """Encapsulates the Telegram client and message forwarding logic."""
 
@@ -25,6 +27,7 @@ class Forwarder:
         """Creates and returns a Telegram client instance."""
         return TelegramClient(self.settings.SESSION_NAME, self.settings.API_ID, self.settings.API_HASH)
 
+    @retry_on_telegram_error()
     async def _get_dialog_name(self, entity_id):
         """Fetches and caches the name of a dialog."""
         if not entity_id: return "(Unknown)"
@@ -41,6 +44,7 @@ class Forwarder:
             logger.warning(f"Could not get name for entity {entity_id}: {e}")
             return "(Unknown)"
 
+    @retry_on_telegram_error()
     async def _send_message(self, target_channel_id, message, source_channel_id):
         """Centralized method to send or forward a message."""
         signature_data = f"{source_channel_id}.{message.id}".encode()
