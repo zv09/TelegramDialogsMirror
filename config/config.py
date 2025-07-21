@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Tuple
 
+import platform
+import sys
 from app.__version__ import __version__
 
 class Settings(BaseSettings):
@@ -8,7 +10,7 @@ class Settings(BaseSettings):
 
     API_ID: int
     API_HASH: str
-    APP_NAME: str = 'TelegramDialogsMirror'
+    APP_NAME: str = 'pyTelegramDialogsMirror'
     CHANNEL_MAPPINGS_STR: str  # This will be loaded from .env
 
     # Performance settings
@@ -20,8 +22,8 @@ class Settings(BaseSettings):
     CONNECTION_RETRIES: int = 9
     RETRY_DELAY: int = 36
     AUTO_RECONNECT: bool = True
-    DEVICE_MODEL: str = "pyTgForwarder"
-    SYSTEM_VERSION: str = "Python 3"
+    DEVICE_MODEL: str = "pyTelegramDialogsMirror"
+    SYSTEM_VERSION: str = f"Python {sys.version.split()[0]} on {platform.system()} {platform.release()}"
     APP_VERSION: str = __version__
     LANG_CODE: str = 'ru'
     RECEIVE_UPDATES: bool = True
