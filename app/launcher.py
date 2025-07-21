@@ -9,6 +9,7 @@ from loguru import logger
 
 from app.arguments import parse_args
 from config.config import Settings
+from app.client import create_telegram_client
 from app.forwarder import Forwarder
 from app.synchronizer import MessageSynchronizer
 from app.cache import CacheManager
@@ -20,8 +21,9 @@ class Launcher:
         self.args = parse_args()
         self.settings = Settings()
         self.cache_manager = CacheManager()
-        self.forwarder = Forwarder(self.settings, self.cache_manager)
-        self.synchronizer = MessageSynchronizer(self.forwarder.client, self.cache_manager, self.forwarder)
+        self.client = create_telegram_client(self.settings)
+        self.forwarder = Forwarder(self.client, self.settings, self.cache_manager)
+        self.synchronizer = MessageSynchronizer(self.client, self.cache_manager, self.forwarder)
         self.shutdown_event = asyncio.Event()
 
     def _setup_signal_handlers(self):

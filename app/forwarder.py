@@ -17,15 +17,11 @@ from app.utils import retry_on_telegram_error
 class Forwarder:
     """Encapsulates the Telegram client and message forwarding logic."""
 
-    def __init__(self, settings: Settings, cache_manager: CacheManager):
+    def __init__(self, client: TelegramClient, settings: Settings, cache_manager: CacheManager):
+        self.client = client
         self.settings = settings
-        self.client = self._create_client()
         self.cache_manager = cache_manager
         self._dialog_name_cache = {}
-
-    def _create_client(self):
-        """Creates and returns a Telegram client instance."""
-        return TelegramClient(self.settings.SESSION_NAME, self.settings.API_ID, self.settings.API_HASH)
 
     @retry_on_telegram_error()
     async def _get_dialog_name(self, entity_id):
