@@ -54,24 +54,24 @@ class MessageSynchronizer:
         source_message_ids = await self._get_source_state(source_channel_id)
         
         logger.info(f"Fetching live state for destination channel {target_channel_id}.")
-        all_target_msgs = await retry_on_telegram_error()(self.client.get_messages)(target_channel_id, limit=None)
-
-        source_message_ids.reverse()
-        all_target_msgs.reverse()
-
-        target_original_ids = []
-        for msg in all_target_msgs:
+        # Memory optimization: Iterate and store only IDs, not full message objects.
+        target_messages_info = []
+        async for msg in self.client.iter_messages(target_channel_id):
             sig = self._parse_signature_button(msg)
-            if sig and sig[0] == source_channel_id:
-                target_original_ids.append(sig[1])
-            else:
-                target_original_ids.append(-1)
+            original_source_id = sig[1] if sig and sig[0] == source_channel_id else -1
+            target_messages_info.append({'original_id': original_source_id, 'target_id': msg.id})
+
+        # Messages are fetched newest to oldest. Reverse to compare from the start.
+        source_message_ids.reverse()
+        target_messages_info.reverse()
+
+        target_original_ids = [info['original_id'] for info in target_messages_info]
 
         logger.debug(f"Source IDs ({len(source_message_ids)}): {source_message_ids}")
         logger.debug(f"Target's Original IDs ({len(target_original_ids)}): {target_original_ids}")
 
         divergence_index = 0
-        while (divergence_index < len(source_message_ids) and \
+        while (divergence_index < len(source_message_ids) and 
                divergence_index < len(target_original_ids)):
             if source_message_ids[divergence_index] != target_original_ids[divergence_index]:
                 break
@@ -79,10 +79,16 @@ class MessageSynchronizer:
 
         logger.info(f"Divergence found at index {divergence_index}.")
 
-        if divergence_index < len(all_target_msgs):
-            logger.info(f"Target channel has {len(all_target_msgs) - divergence_index} incorrect messages. Deleting them.")
-            target_msgs_to_delete = [msg.id for msg in all_target_msgs[divergence_index:] if self._parse_signature_button(msg)]
+        if divergence_index < len(target_messages_info):
+            num_to_delete = len(target_messages_info) - divergence_index
+            logger.info(f"Target channel has {num_to_delete} incorrect messages. Deleting them.")
+            
+            target_msgs_to_delete = [
+                info['target_id'] for info in target_messages_info[divergence_index:] if info['original_id'] != -1
+            ]
+            
             if target_msgs_to_delete:
+                self.stats_manager.add_messages_deleted(len(target_msgs_to_delete))
                 await retry_on_telegram_error()(self.client.delete_messages)(target_channel_id, target_msgs_to_delete)
 
         resend_count = len(source_message_ids) - divergence_index
