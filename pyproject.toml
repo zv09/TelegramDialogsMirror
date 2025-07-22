@@ -7,3 +7,8 @@ message = "chore(release): Bump version to {new_version}"
 
 [[tool.bumpversion.files]]
 filename = "app/__version__.py"
+
+[[tool.bumpversion.files]]
+filename = "changelog.md"
+search = "## [Unreleased]"
+replace = "## [{new_version}] - {now:%Y-%m-%d}\n\n{logs}\n\n## [Unreleased]"
