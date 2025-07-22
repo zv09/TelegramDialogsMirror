@@ -7,7 +7,7 @@ import asyncio
 from telethon import TelegramClient, events
 from telethon.tl.types import MessageMediaWebPage, MessageService
 from telethon.tl.custom import Button
-from loguru import logger
+from telethon.utils import get_display_name
 
 from config.config import Settings
 from app.cache import CacheManager
@@ -32,9 +32,7 @@ class Forwarder:
             return self._dialog_name_cache[entity_id]
         try:
             entity = await self.client.get_entity(entity_id)
-            name = getattr(entity, 'title', None) or getattr(entity, 'first_name', None) or getattr(entity, 'username', f"ID: {entity_id}")
-            if hasattr(entity, 'last_name') and entity.last_name:
-                name += f" {entity.last_name}"
+            name = get_display_name(entity)
             self._dialog_name_cache[entity_id] = name
             return name
         except Exception as e:
