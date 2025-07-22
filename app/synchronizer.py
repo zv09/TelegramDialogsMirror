@@ -37,10 +37,14 @@ class MessageSynchronizer:
             return cached_data
 
         logger.info(f"Building initial cache for source channel {channel_id}.")
-        message_ids = [msg.id async for msg in self.client.iter_messages(channel_id)]
-        self.cache_manager.set(cache_key, message_ids)
-        logger.info(f"Fetched and cached state for source channel {channel_id}.")
-        return message_ids
+        try:
+            message_ids = [msg.id async for msg in self.client.iter_messages(channel_id)]
+            self.cache_manager.set(cache_key, message_ids)
+            logger.info(f"Fetched and cached state for source channel {channel_id}.")
+            return message_ids
+        except Exception as e:
+            logger.error(f"Failed to fetch initial state for {channel_id}: {e}")
+            return []
 
     @retry_on_telegram_error()
     async def synchronize(self, source_channel_id: int, target_channel_id: int, shutdown_event: asyncio.Event):
