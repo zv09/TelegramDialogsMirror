@@ -17,7 +17,15 @@ LOG_TELETHON_DIFFERENCES=False
 
 # Optional performance settings for Dialogs fetching
 # SEND_DELAY=0.9
-# BATCH_SIZE=128
+# BATCH_SIZE=150
+
+# The maximum number of dialog (user/channel) names to keep in memory.
+# This is a performance optimization that uses a small amount of memory to avoid
+# repeated lookups for dialog names. A larger size can improve performance if you
+# interact with many different users/channels.
+# Memory usage is minimal: 200 items is ~35KB; 1000 items is ~175KB.
+MAX_CACHE_SIZE=200
+
 
 # Dialogs|Channel IDs for mirrorin'
 CHANNEL_MAPPINGS_STR="SOURCE_CHANNEL_ID_1,TARGET_CHANNEL_ID_1;SOURCE_CHANNEL_ID_2,TARGET_CHANNEL_ID_2"
