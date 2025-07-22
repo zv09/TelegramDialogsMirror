@@ -108,32 +108,13 @@ class Forwarder:
         logger.info("Client starting...")
         self.client.add_event_handler(self.message_handler, events.NewMessage())
 
-        async with self.client as client:
-            while not shutdown_event.is_set():
-                try:
-                    if not client.is_connected():
-                        await client.connect()
+        async with self.client:
+            logger.info("Client started successfully. Listening for messages...")
 
-                    logger.info("Client started successfully. Listening for messages...")
+            for source_channel, target_channel in self.settings.CHANNEL_MAPPINGS:
+                source_name = await self._get_dialog_name(source_channel)
+                target_name = await self._get_dialog_name(target_channel)
+                logger.info(f"Registered handler: {source_name} (ID: {source_channel}) -> {target_name} (ID: {target_channel})")
 
-                    for source_channel, target_channel in self.settings.CHANNEL_MAPPINGS:
-                        source_name = await self._get_dialog_name(source_channel)
-                        target_name = await self._get_dialog_name(target_channel)
-                        logger.info(f"Registered handler: {source_name} (ID: {source_channel}) -> {target_name} (ID: {target_channel})")
-
-                    logger.info("Awaiting new events...")
-                    await shutdown_event.wait()
-
-                except (ConnectionError, TimeoutError) as e:
-                    logger.warning(f"Connection error: {e}. Reconnecting...")
-                    await asyncio.sleep(5)
-                except telethon.errors.rpcerrorlist.PersistentTimestampOutdatedError:
-                    logger.warning("Persistent timestamp outdated. Triggering full resynchronization...")
-                    for source, target in self.settings.CHANNEL_MAPPINGS:
-                        await synchronizer.synchronize(source, target, shutdown_event)
-                    logger.info("Resynchronization complete. Restarting live forwarding...")
-                except Exception as e:
-                    logger.error(f"An unexpected error occurred: {e}")
-                    break  # Exit on other unexpected errors
-                finally:
-                    logger.info("Client stopped.")
+            logger.info("Awaiting new events...")
+            await shutdown_event.wait()
