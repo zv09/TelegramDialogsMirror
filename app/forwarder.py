@@ -111,7 +111,10 @@ class Forwarder:
     async def run(self, shutdown_event: asyncio.Event, synchronizer):
         """Runs the Telegram client and listens for messages."""
         logger.info("Client starting...")
-        self.client.add_event_handler(self.message_handler, events.NewMessage())
+        
+        # Listen only to the specified source channels for efficiency.
+        source_channels = [source for source, target in self.settings.CHANNEL_MAPPINGS]
+        self.client.add_event_handler(self.message_handler, events.NewMessage(chats=source_channels))
 
         async with self.client:
             logger.info("Client started successfully. Listening for messages...")
