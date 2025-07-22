@@ -99,14 +99,12 @@ class Forwarder:
         """Runs the Telegram client and listens for messages."""
         logger.info("Client starting...")
         self.client.add_event_handler(self.message_handler, events.NewMessage())
-        self._connection_lock = asyncio.Lock()
 
         async with self.client as client:
             while not shutdown_event.is_set():
                 try:
-                    async with self._connection_lock:
-                        if not client.is_connected():
-                            await client.connect()
+                    if not client.is_connected():
+                        await client.connect()
 
                     logger.info("Client started successfully. Listening for messages...")
 
