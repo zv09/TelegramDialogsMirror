@@ -12,3 +12,7 @@ filename = "app/__version__.py"
 filename = "changelog.md"
 search = "## [Unreleased]"
 replace = "## [{new_version}] - {now:%Y-%m-%d}\n\n{logs}\n\n## [Unreleased]"
+
+[tool.bumpversion.parts.logs]
+values = []
+optional_value = ":git:log --pretty=format:'* %s' {last_tag}..HEAD"
