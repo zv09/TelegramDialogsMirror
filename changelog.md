@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.0] - 2025-07-22
 
+* fix: configure bump-my-version to get logs from git
+* feat: add changelog and configure bump-my-version
 * fix: uncomment params in env_example.txt
 * fix: listen only to specified source channels
 * feat: implement lru cache for dialog names
@@ -24,3 +26,5 @@ All notable changes to this project will be documented in this file.
 * fix: improve shutdown handling in synchronizer
 * fix: prevent caching of failed initial fetches
 * feat: improve retry decorator with jitter and backoff
+
+## [Unreleased]
