@@ -1,18 +1,24 @@
 [tool.bumpversion]
 current_version = "1.5.0"
-commit = true
-tag = true
+commit = true  # Disable auto-commit due to persistent issues
+tag = true     # Disable auto-tag
 tag_name = "v{new_version}"
 message = "chore(release): Bump version to {new_version}"
 
+# File configurations
 [[tool.bumpversion.files]]
 filename = "app/__version__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "changelog.md"
 search = "## [Unreleased]"
-replace = "## [{new_version}] - {now:%Y-%m-%d}\n\n{logs}\n\n## [Unreleased]"
+replace = """## [Unreleased]
 
-[tool.bumpversion.parts.logs]
-values = []
-optional_value = ":git:log --pretty=format:'* %s' {last_tag}..HEAD"
+## [{new_version}] - {now:%Y-%m-%d}"""
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'current_version = "{current_version}"'
+replace = 'current_version = "{new_version}"'
