@@ -80,7 +80,7 @@ class MessageSynchronizer:
 
         if divergence_index < len(all_target_msgs):
             logger.info(f"Target channel has {len(all_target_msgs) - divergence_index} incorrect messages. Deleting them.")
-            target_msgs_to_delete = [msg.id for msg in all_target_msgs[divergence_index:]]
+            target_msgs_to_delete = [msg.id for msg in all_target_msgs[divergence_index:] if self._parse_signature_button(msg)]
             if target_msgs_to_delete:
                 await retry_on_telegram_error()(self.client.delete_messages)(target_channel_id, target_msgs_to_delete)
 
