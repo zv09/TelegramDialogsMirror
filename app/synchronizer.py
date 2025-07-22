@@ -111,6 +111,9 @@ class MessageSynchronizer:
                         logger.error(f"Failed to resend message {message.id}: {e}")
                         stats_manager.increment_forward_failure()
                 
+                if shutdown_event.is_set():
+                    logger.warning("Shutdown signal received, stopping synchronization.")
+                    return
                 logger.info("Batch sent. Pausing for 5 seconds...")
                 await asyncio.sleep(5)
 
