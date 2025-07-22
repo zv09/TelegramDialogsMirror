@@ -75,8 +75,7 @@ class Forwarder:
             return
 
         try:
-            async with self._connection_lock:
-                await self._send_message(target_channel_id, message, source_channel_id)
+            await self._send_message(target_channel_id, message, source_channel_id)
 
             # Live-update the cache using the unified key
             cache_key = self.cache_manager.get_channel_state_key(source_channel_id)
