@@ -23,7 +23,7 @@ class Launcher:
         self.settings = Settings()
         self.cache_manager = CacheManager()
         self.client = create_telegram_client(self.settings)
-        self.forwarder = Forwarder(self.client, self.settings, self.cache_manager)
+        self.forwarder = Forwarder(self.client, self.settings, self.cache_manager, stats_manager)
         self.synchronizer = MessageSynchronizer(self.client, self.cache_manager, self.forwarder)
         self.shutdown_event = asyncio.Event()
 
@@ -49,14 +49,20 @@ class Launcher:
 
         try:
             if self.args.copy:
-                await self.forwarder.client.start()
-                for source, target in self.settings.CHANNEL_MAPPINGS:
-                    if self.shutdown_event.is_set():
-                        break
-                    await self.synchronizer.synchronize(source, target, self.shutdown_event)
-                logger.info("Message synchronization complete.")
+                try:
+                    await self.forwarder.client.start()
+                    for source, target in self.settings.CHANNEL_MAPPINGS:
+                        if self.shutdown_event.is_set():
+                            break
+                        await self.synchronizer.synchronize(source, target, self.shutdown_event)
+                    logger.info("Message synchronization complete.")
+                finally:
+                    if self.forwarder.client.is_connected():
+                        await self.forwarder.client.disconnect()
             else:
                 await self.forwarder.run(self.shutdown_event, self.synchronizer)
+        except (ValueError, TypeError) as e:
+            logger.critical(f"Configuration error: {e}")
         except asyncio.CancelledError:
             logger.info("Application shutdown forcefully.")
         finally:
