@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # Performance settings
     SEND_DELAY: float = 0.8
     BATCH_SIZE: int = 150
+    MAX_CACHE_SIZE: int = 200
 
     # TelegramClient specific settings
     REQUEST_RETRIES: int = 9

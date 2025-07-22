@@ -4,10 +4,12 @@ This script handles the live forwarding of messages.
 """
 
 import asyncio
+from collections import OrderedDict
 from telethon import TelegramClient, events
 from telethon.tl.types import MessageMediaWebPage, MessageService
 from telethon.tl.custom import Button
 from telethon.utils import get_display_name
+from loguru import logger
 
 from config.config import Settings
 from app.cache import CacheManager
@@ -22,18 +24,21 @@ class Forwarder:
         self.settings = settings
         self.cache_manager = cache_manager
         self.stats_manager = stats_manager
-        self._dialog_name_cache = {}
+        self._dialog_name_cache = OrderedDict()
 
     @retry_on_telegram_error()
     async def _get_dialog_name(self, entity_id):
-        """Fetches and caches the name of a dialog."""
+        """Fetches and caches the name of a dialog using an LRU cache."""
         if not entity_id: return "(Unknown)"
         if entity_id in self._dialog_name_cache:
+            self._dialog_name_cache.move_to_end(entity_id)
             return self._dialog_name_cache[entity_id]
         try:
             entity = await self.client.get_entity(entity_id)
             name = get_display_name(entity)
             self._dialog_name_cache[entity_id] = name
+            if len(self._dialog_name_cache) > self.settings.MAX_CACHE_SIZE:
+                self._dialog_name_cache.popitem(last=False)
             return name
         except Exception as e:
             logger.warning(f"Could not get name for entity {entity_id}: {e}")
