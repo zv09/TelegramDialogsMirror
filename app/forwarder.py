@@ -17,10 +17,11 @@ from app.utils import retry_on_telegram_error
 class Forwarder:
     """Encapsulates the Telegram client and message forwarding logic."""
 
-    def __init__(self, client: TelegramClient, settings: Settings, cache_manager: CacheManager):
+    def __init__(self, client: TelegramClient, settings: Settings, cache_manager: CacheManager, stats_manager):
         self.client = client
         self.settings = settings
         self.cache_manager = cache_manager
+        self.stats_manager = stats_manager
         self._dialog_name_cache = {}
 
     @retry_on_telegram_error()
@@ -80,38 +81,46 @@ class Forwarder:
             cache_key = self.cache_manager.get_channel_state_key(source_channel_id)
             self.cache_manager.append_to_list(cache_key, message.id)
             logger.info(f"Successfully forwarded message {message.id} and updated cache.")
-            stats_manager.increment_forward_success()
+            self.stats_manager.increment_forward_success()
             await asyncio.sleep(1)
 
         except Exception as e:
             logger.error(f"An unexpected error occurred while handling message {message.id}: {e}")
-            stats_manager.increment_forward_failure()
+            self.stats_manager.increment_forward_failure()
 
     async def run(self, shutdown_event: asyncio.Event, synchronizer):
         """Runs the Telegram client and listens for messages."""
         logger.info("Client starting...")
-        while not shutdown_event.is_set():
-            try:
-                await self.client.start()
-                logger.info("Client started successfully. Listening for messages...")
+        self.client.add_event_handler(self.message_handler, events.NewMessage())
+        self._connection_lock = asyncio.Lock()
 
-                for source_channel, target_channel in self.settings.CHANNEL_MAPPINGS:
-                    self.client.add_event_handler(self.message_handler, events.NewMessage(chats=source_channel))
-                    source_name = await self._get_dialog_name(source_channel)
-                    target_name = await self._get_dialog_name(target_channel)
-                    logger.info(f"Registered handler: {source_name} (ID: {source_channel}) -> {target_name} (ID: {target_channel})")
+        async with self.client as client:
+            while not shutdown_event.is_set():
+                try:
+                    async with self._connection_lock:
+                        if not client.is_connected():
+                            await client.connect()
 
-                logger.info("Awaiting new events...")
-                await shutdown_event.wait()
-            except telethon.errors.rpcerrorlist.PersistentTimestampOutdatedError:
-                logger.warning("Persistent timestamp outdated. Triggering full resynchronization...")
-                for source, target in self.settings.CHANNEL_MAPPINGS:
-                    await synchronizer.synchronize(source, target, shutdown_event)
-                logger.info("Resynchronization complete. Restarting live forwarding...")
-            except Exception as e:
-                logger.error(f"An unexpected error occurred: {e}")
-                break  # Exit on other unexpected errors
-            finally:
-                if self.client.is_connected():
-                    await self.client.disconnect()
-                logger.info("Client stopped.")
+                    logger.info("Client started successfully. Listening for messages...")
+
+                    for source_channel, target_channel in self.settings.CHANNEL_MAPPINGS:
+                        source_name = await self._get_dialog_name(source_channel)
+                        target_name = await self._get_dialog_name(target_channel)
+                        logger.info(f"Registered handler: {source_name} (ID: {source_channel}) -> {target_name} (ID: {target_channel})")
+
+                    logger.info("Awaiting new events...")
+                    await shutdown_event.wait()
+
+                except (ConnectionError, TimeoutError) as e:
+                    logger.warning(f"Connection error: {e}. Reconnecting...")
+                    await asyncio.sleep(5)
+                except telethon.errors.rpcerrorlist.PersistentTimestampOutdatedError:
+                    logger.warning("Persistent timestamp outdated. Triggering full resynchronization...")
+                    for source, target in self.settings.CHANNEL_MAPPINGS:
+                        await synchronizer.synchronize(source, target, shutdown_event)
+                    logger.info("Resynchronization complete. Restarting live forwarding...")
+                except Exception as e:
+                    logger.error(f"An unexpected error occurred: {e}")
+                    break  # Exit on other unexpected errors
+                finally:
+                    logger.info("Client stopped.")
