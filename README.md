@@ -72,6 +72,13 @@ This is a Python script that forwards messages from specified source Telegram ch
     -   `APP_NAME`: A name for your application session file (e.g., `TelegramDialogsMirror`).
     -   `CHANNEL_MAPPINGS_STR`: A semicolon-separated string of source and target channel ID pairs. For example, `"-100123456789,-100987654321"` would forward messages from channel `-100123456789` to `-100987654321`.
 
+## Configuration
+
+The following environment variables can be configured in the `.env` file to fine-tune the application's performance:
+
+-   `BATCH_SIZE`: The number of messages to process in a single batch during synchronization (`--copy` mode). A smaller batch size can help avoid `FloodWaitError` but may slow down the overall process. Default: `150`.
+-   `MAX_CACHE_SIZE`: The maximum number of dialog (user/channel) names to keep in memory. This is a performance optimization that uses a small amount of memory to avoid repeated lookups for dialog names. A larger size can improve performance if you interact with many different users/channels. Memory usage is minimal: 200 items is ~35KB; 1000 items is ~175KB. Default: `200`.
+
 ## Running the Application
 
 ### Live Forwarding Mode
