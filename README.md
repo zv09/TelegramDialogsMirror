@@ -79,7 +79,7 @@ The following environment variables can be configured in the `.env` file to fine
 -   `BATCH_SIZE`: The number of messages to process in a single batch during synchronization (`--copy` mode). A smaller batch size can help avoid `FloodWaitError` but may slow down the overall process. Default: `150`.
 -   `MAX_CACHE_SIZE`: The maximum number of dialog (user/channel) names to keep in memory. This is a performance optimization that uses a small amount of memory to avoid repeated lookups for dialog names. A larger size can improve performance if you interact with many different users/channels. Memory usage is minimal: 200 items is ~35KB; 1000 items is ~175KB. Default: `200`.
 
-## Running the Application
+
 
 ### Live Forwarding Mode
 
@@ -103,33 +103,8 @@ This mode will:
 3.  Delete all incorrect messages from the target channel starting from the point of divergence.
 4.  Resend the correct sequence of messages (including all media and system message placeholders) from the source.
 
-## Project Structure
 
-```
-.env                 # Environment variables (ignored by git)
-.gitignore           # Git ignore file
-README.md            # This README file
-requirements.txt     # Python dependencies
-main.py              # Minimalist application entry point
-env_example.txt      # Example environment variables file
-
-app/
-├── launcher.py      # Main application orchestrator
-├── arguments.py     # Handles command-line argument parsing
-├── forwarder.py     # Handles live message forwarding
-├── synchronizer.py  # Handles the --copy synchronization logic
-├── cache.py         # Manages disk-based caching
-└── utils.py         # Shared utilities (e.g., error handling decorators)
-
-config/
-├── config.py        # Pydantic settings class
-└── logger.py        # Logging configuration
-
-Logs/                # Directory for log files
-sessions/            # Directory for Telethon session files
-cache/               # Directory for cached message data
-```
 
 ## Contributing
 
-Feel free to contribute by opening issues or pull requests.
+Contributions are welcome! If you'd like to contribute to the project, please see the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started, the project structure, and the release process.
