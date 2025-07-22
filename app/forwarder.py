@@ -40,27 +40,38 @@ class Forwarder:
             return "(Unknown)"
 
     @retry_on_telegram_error()
-    async def _send_message(self, target_channel_id, message, source_channel_id):
-        """Centralized method to send or forward a message."""
+    async def _forward_system_message(self, target_channel_id, message, source_channel_id):
+        """Forwards a system message."""
+        logger.info(f"System message in {source_channel_id}. Forwarding placeholder.")
+        text = f"System Message: {message.text}"
+        signature_data = f"{source_channel_id}.{message.id}".encode()
+        signature_button = Button.inline(" ", data=signature_data)
+        await self.client.send_message(target_channel_id, text, buttons=signature_button)
+
+    @retry_on_telegram_error()
+    async def _forward_regular_message(self, target_channel_id, message, source_channel_id):
+        """Forwards a regular message."""
+        sender = await message.get_sender()
+        sender_name = await self._get_dialog_name(sender.id)
+        logger.info(f"Forwarding message {message.id} from {source_channel_id} to {target_channel_id}.")
+        
+        header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {message.date.isoformat().replace('T', ' ')}"
+        caption = f"{header}\n\n{message.text or ''}"
         signature_data = f"{source_channel_id}.{message.id}".encode()
         signature_button = Button.inline(" ", data=signature_data)
 
-        if isinstance(message, MessageService):
-            logger.info(f"System message in {source_channel_id}. Forwarding placeholder.")
-            text = f"System Message: {message.text}"
-            await self.client.send_message(target_channel_id, text, buttons=signature_button)
+        if message.media and not isinstance(message.media, MessageMediaWebPage):
+            await self.client.send_file(target_channel_id, message.media, caption=caption, buttons=signature_button)
         else:
-            sender = await message.get_sender()
-            sender_name = await self._get_dialog_name(sender.id)
-            logger.info(f"Forwarding message {message.id} from {source_channel_id} to {target_channel_id}.")
-            
-            header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {message.date.isoformat().replace('T', ' ')}"
-            caption = f"{header}\n\n{message.text or ''}"
+            await self.client.send_message(target_channel_id, caption, link_preview=True, buttons=signature_button)
 
-            if message.media and not isinstance(message.media, MessageMediaWebPage):
-                await self.client.send_file(target_channel_id, message.media, caption=caption, buttons=signature_button)
-            else:
-                await self.client.send_message(target_channel_id, caption, link_preview=True, buttons=signature_button)
+    async def _send_message(self, target_channel_id, message, source_channel_id):
+        """Centralized method to send or forward a message."""
+        if isinstance(message, MessageService):
+            await self._forward_system_message(target_channel_id, message, source_channel_id)
+            self.stats_manager.increment_system_messages()
+        else:
+            await self._forward_regular_message(target_channel_id, message, source_channel_id)
 
     async def message_handler(self, event):
         """Handles new messages from a source channel and forwards them to the target."""
