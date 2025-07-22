@@ -24,7 +24,7 @@ class Launcher:
         self.cache_manager = CacheManager()
         self.client = create_telegram_client(self.settings)
         self.forwarder = Forwarder(self.client, self.settings, self.cache_manager, stats_manager)
-        self.synchronizer = MessageSynchronizer(self.client, self.cache_manager, self.forwarder)
+        self.synchronizer = MessageSynchronizer(self.client, self.cache_manager, self.forwarder, stats_manager)
         self.shutdown_event = asyncio.Event()
 
     def _setup_signal_handlers(self):

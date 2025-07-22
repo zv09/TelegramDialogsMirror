@@ -11,10 +11,11 @@ from app.utils import retry_on_telegram_error
 class MessageSynchronizer:
     """Synchronizes messages between a source and target channel."""
 
-    def __init__(self, client: TelegramClient, cache_manager: CacheManager, forwarder):
+    def __init__(self, client: TelegramClient, cache_manager: CacheManager, forwarder, stats_manager):
         self.client = client
         self.cache_manager = cache_manager
         self.forwarder = forwarder
+        self.stats_manager = stats_manager
 
     def _parse_signature_button(self, message):
         """Parses the signature from an invisible button on a message."""
@@ -105,11 +106,11 @@ class MessageSynchronizer:
                     try:
                         await self.forwarder._send_message(target_channel_id, message, source_channel_id)
                         logger.info(f"Resent message {message.id} from {source_channel_id}.")
-                        stats_manager.add_messages_resent(1)
+                        self.stats_manager.add_messages_resent(1)
                         await asyncio.sleep(self.forwarder.settings.SEND_DELAY)
                     except Exception as e:
                         logger.error(f"Failed to resend message {message.id}: {e}")
-                        stats_manager.increment_forward_failure()
+                        self.stats_manager.increment_forward_failure()
                 
                 if shutdown_event.is_set():
                     logger.warning("Shutdown signal received, stopping synchronization.")
