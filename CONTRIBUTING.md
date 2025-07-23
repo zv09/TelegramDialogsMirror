@@ -277,14 +277,43 @@ Use `bump-my-version` to increment the version. The tool will automatically upda
   bump-my-version major
   ```
 
-### Step 3: Verify the Signed Tag
+### Step 3: Verify the New Tag
 
-You can check that the new tag was created and signed correctly.
+After creating a new version, it's important to verify the tag. You can list all tags to see the new one:
+
 ```bash
-# Replace v1.5.6 with the new version tag
-git show v1.5.6
+git tag
 ```
-The output should include a `gpg` signature block.
+
+To see the details of the new tag and verify its GPG signature, use the `git show` command. 
+
+**Example of a GPG-Signed Tag**
+
+When you run `git show v1.5.6`, the output for a signed tag will include a `gpg` signature block. This confirms the tag is authentic.
+
+```
+commit a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2
+Author: Your Name <you@example.com>
+Date:   Wed Jul 24 10:00:00 2025 +0000
+
+    Bump version: 1.5.5 → 1.5.6
+
+gpg: Signature made Wed Jul 24 10:00:00 2025 +0000
+gpg:                using RSA key YOUR_GPG_KEY_ID
+gpg: Good signature from "Your Name <you@example.com>"
+```
+
+**Example of an Unsigned Tag**
+
+For comparison, an unsigned tag (which should not be created by our release process) would simply show the commit and author information without any GPG signature block:
+
+```
+commit a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2
+Author: Your Name <you@example.com>
+Date:   Wed Jul 24 10:00:00 2025 +0000
+
+    Bump version: 1.5.5 → 1.5.6
+```
 
 ### Step 4: Push to Remote
 
