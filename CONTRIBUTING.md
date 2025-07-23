@@ -78,7 +78,7 @@ To create a new release, simply run the script from the `master` branch and spec
 This will:
 1.  Find the latest git tag.
 2.  Collect all commit messages since that tag.
-3.  Run `bump-my-version` to update the version in `app/__version__.py` and `pyproject.toml`.
+3.  Run `bump-my-version` to update the version in `pyproject.toml`.
 4.  Update `changelog.md` with the new version, date, and the collected commit messages.
 5.  Create a new commit with the release.
 6.  Create a new git tag for the release.

@@ -1,9 +1,14 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Tuple
+import toml
 
 import platform
 import sys
-from app.__version__ import __version__
+
+def get_app_version() -> str:
+    with open("pyproject.toml", "r") as f:
+        pyproject_data = toml.load(f)
+    return pyproject_data["tool"]["bumpversion"]["current_version"]
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
@@ -25,7 +30,7 @@ class Settings(BaseSettings):
     AUTO_RECONNECT: bool = True
     DEVICE_MODEL: str = "pyTelegramDialogsMirror"
     SYSTEM_VERSION: str = f"Python {sys.version.split()[0]} on {platform.system()} {platform.release()}"
-    APP_VERSION: str = __version__
+    APP_VERSION: str = get_app_version()
     LANG_CODE: str = 'ru'
     RECEIVE_UPDATES: bool = True
     LOG_TELETHON_DIFFERENCES: bool = True

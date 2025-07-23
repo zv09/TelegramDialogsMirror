@@ -1,0 +1,65 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/trigger-release'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install bump-my-version
+
+      - name: Get release info
+        id: release
+        run: |
+          VERSION=$(cat .github/trigger-release)
+          CHANGES=$(awk -v ver="[$VERSION]" '/## \[Unreleased\]/{flag=1;next}/## 'ver'/{flag=0}flag' CHANGELOG.md)
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "changes<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          rm .github/trigger-release
+
+      - name: Commit release
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md pyproject.toml
+          git commit -m "chore(release): v${{ steps.release.outputs.version }}"
+          git tag "v${{ steps.release.outputs.version }}"
+
+      - name: Push changes
+        run: |
+          git push origin main
+          git push --tags
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.release.outputs.version }}
+          release_name: v${{ steps.release.outputs.version }}
+          body: |
+            ${{ steps.release.outputs.changes }}
+          draft: false
+          prerelease: false
+
+      - name: Cleanup
+        if: always()
+        run: rm -f .github/trigger-release
