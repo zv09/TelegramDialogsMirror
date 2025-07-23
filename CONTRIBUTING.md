@@ -34,6 +34,58 @@ To get your development environment set up, follow these steps:
 
     Copy `env_example.txt` to `.env` and add your Telegram API credentials.
 
+## GPG Signing for Releases
+
+To enhance security and verify the integrity of releases, this project requires that all version tags be signed with a GPG key.
+
+If you are a contributor who is responsible for creating new releases, you must have a GPG key configured in your local environment.
+
+### 1. Generating a GPG Key
+
+If you don't already have a GPG key, you can generate one by following the instructions on [GitHub's documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
+
+### 2. Adding the GPG Key to Your GitHub Account
+
+Once you have a key, you need to add it to your GitHub account. You can find instructions on how to do this [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/adding-a-new-gpg-key-to-your-github-account).
+
+### 3. Configuring Git to Use Your GPG Key
+
+After adding your key to GitHub, you need to configure Git to use it for signing.
+
+First, list your GPG keys to find the key ID:
+
+```bash
+gpg --list-secret-keys --keyid-format LONG
+```
+
+From the output, copy the GPG key ID that you want to use. It's the long string of characters after `rsa4096/`.
+
+Then, configure Git to use this key:
+
+```bash
+git config --global user.signingkey YOUR_KEY_ID
+```
+
+### 4. Updating Your GPG Key's User ID (Optional)
+
+If you need to change the name or email associated with your GPG key, you can do so with the following steps:
+
+1.  Start the interactive key editing process:
+
+    ```bash
+    gpg --edit-key YOUR_KEY_ID
+    ```
+
+2.  Use the `adduid` command to add a new user ID. You will be prompted for a name and email.
+
+3.  Set the new user ID as the primary one.
+
+4.  Delete the old user ID.
+
+5.  Save your changes.
+
+For a more detailed walkthrough, you can refer to the manual steps provided in the project's documentation.
+
 ## Project Structure
 
 The project is organized to separate concerns and make the codebase easy to navigate:
