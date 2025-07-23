@@ -336,34 +336,25 @@ The output for a signed annotated tag has two parts:
 $ git show v1.5.6
 
 tag v1.5.6
-Tagger: Your Name <you@example.com>
+Tagger: Example User <example@users.noreply.github.com>
 Date:   Wed Jul 24 10:00:00 2025 +0300
 
 Bump version: 1.5.5 → 1.5.6
-***REMOVED***
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+-----BEGIN PGP SIGNATURE-----
+
+[GENERIC EXAMPLE GPG SIGNATURE BLOCK - DO NOT USE ORIGINAL IN PRODUCTION]
+
+-----END PGP SIGNATURE-----
 
 commit 8bffd5d92c646d0dab7f8cdc7cc806609f88bb99
-Author: Your Name <you@example.com>
+Author: Example User <example@users.noreply.github.com>
 Date:   Wed Jul 24 10:00:00 2025 +0300
 
     Bump version: 1.5.5 → 1.5.6
 ```
-The presence of the `***REMOVED***` block on the **tag object** is the confirmation that the release is authentic.
+
+The presence of the `-----BEGIN PGP SIGNATURE-----` block on the **tag object** is the confirmation that the release is authentic.
 
 **Forcing a Local GPG Verification**
 
