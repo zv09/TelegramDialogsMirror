@@ -7,6 +7,16 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/releases/latest)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/tags)
 
+## Outline
+
+- [Support the Project](#support)
+- [Overview](#overview)
+- [Features](#features)
+- [Setup](#setup)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Contributing](#contributing)
+
 ## [Support the Project](docs/donations.md) <a name="support"></a>
 
 If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
