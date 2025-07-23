@@ -162,16 +162,38 @@ If you don't have a GPG key, you'll need to create one.
 
 **A. Install GPG**
 
-- **macOS (using Homebrew):**
-  ```bash
-  brew install gnupg
-  ```
-- **Debian/Ubuntu:**
-  ```bash
-  sudo apt-get update
-  sudo apt-get install gnupg
-  ```
-- **Windows:** Download and install [Gpg4win](https://www.gpg4win.org/).
+- **macOS:**
+  - **Using [Homebrew](https://brew.sh/):** (Recommended)
+    ```bash
+    brew install gnupg
+    ```
+  - **Using [MacPorts](https://www.macports.org/):**
+    ```bash
+    sudo port install gnupg2
+    ```
+
+- **Linux:**
+  - **Debian / Ubuntu / Mint:**
+    ```bash
+    sudo apt-get update
+    sudo apt-get install gnupg
+    ```
+  - **Fedora / CentOS / RHEL:**
+    ```bash
+    sudo dnf install gnupg2
+    ```
+  - **Arch Linux:**
+    ```bash
+    sudo pacman -S gnupg
+    ```
+
+- **Windows:**
+  - **Using [Gpg4win](https://www.gpg4win.org/):** (Recommended)
+    Download and run the installer from the official website. This package includes GnuPG, a certificate manager, and a secure email client.
+  - **Using [Chocolatey](https://chocolatey.org/):**
+    ```bash
+    choco install gpg4win
+    ```
 
 **B. Generate a New GPG Key**
 
