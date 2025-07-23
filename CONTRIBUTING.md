@@ -302,42 +302,68 @@ Use `bump-my-version` to increment the version. The tool will automatically upda
   bump-my-version major
   ```
 
-### Step 3: Verify the New Tag
+### Step 3: Verifying Tags
 
-After creating a new version, it's important to verify the tag. You can list all tags to see the new one:
+After creating a release, it is crucial to verify the tag to ensure it was created and signed correctly. 
 
+**Listing All Tags**
+
+To see a list of all local tags, you can use:
 ```bash
 git tag
 ```
+This will show a simple list of tag names, including the one you just created.
 
-To see the details of the new tag and verify its GPG signature, use the `git show` command. 
+**Inspecting a Tag**
 
-**Example of a GPG-Signed Tag**
+To get detailed information, use `git show <tag-name>`. Because our process creates **annotated tags**, the output will contain metadata separate from the commit itself. This is a key security feature.
 
-When you run `git show v1.5.6`, the output for a signed tag will include a `gpg` signature block. This confirms the tag is authentic.
+**Example of a Correctly Signed Tag**
 
-```
-commit a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2
+The output for a signed annotated tag has two parts:
+1.  The **tag object**, which includes the `Tagger` info and the GPG signature block.
+2.  The **commit object**, which the tag points to, showing the `Author` and the code changes.
+
+```bash
+$ git show v1.5.6
+
+tag v1.5.6
+Tagger: Your Name <you@example.com>
+Date:   Wed Jul 24 10:00:00 2025 +0300
+
+Bump version: 1.5.5 → 1.5.6
+***REMOVED***
+
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+
+commit 8bffd5d92c646d0dab7f8cdc7cc806609f88bb99
 Author: Your Name <you@example.com>
-Date:   Wed Jul 24 10:00:00 2025 +0000
+Date:   Wed Jul 24 10:00:00 2025 +0300
 
     Bump version: 1.5.5 → 1.5.6
-
-gpg: Signature made Wed Jul 24 10:00:00 2025 +0000
-gpg:                using RSA key YOUR_GPG_KEY_ID
-gpg: Good signature from "Your Name <you@example.com>"
 ```
+The presence of the `***REMOVED***` block on the **tag object** is the confirmation that the release is authentic.
 
-**Example of an Unsigned Tag**
+**Forcing a Local GPG Verification**
 
-For comparison, an unsigned tag (which should not be created by our release process) would simply show the commit and author information without any GPG signature block:
+To be absolutely certain, you can use the `--verify` flag. This command will produce output only if the tag is invalid or unsigned. A valid signed tag will produce no output.
 
-```
-commit a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2
-Author: Your Name <you@example.com>
-Date:   Wed Jul 24 10:00:00 2025 +0000
-
-    Bump version: 1.5.5 → 1.5.6
+```bash
+# No output means the signature is valid and trusted
+git tag --verify v1.5.6
 ```
 
 ### Step 4: Push to Remote
