@@ -290,17 +290,17 @@ The following diagram illustrates the typical workflow for contributing to the p
 
 ```mermaid
 graph TD
-    A[Remote `dev` Branch] --> B{Fork/Clone Repository};
-    B --> C[Local `dev` Branch];
+    A[Remote dev Branch] --> B{Fork/Clone Repository};
+    B --> C[Local dev Branch];
     C --> D[Create Feature Branch];
     D --> E{Make Changes & Commits};
     E --> F[Push Feature Branch to Fork];
-    F --> G[Create Pull Request to `dev`];
+    F --> G[Create Pull Request to dev];
     G --> H{Code Review & Merge};
-    H --> I[Maintainer on `dev` Branch];
-    I --> J(Run `bump-my-version`);
+    H --> I[Maintainer on dev Branch];
+    I --> J(Run bump-my-version);
     J --> K[New Commit & Signed Tag Created];
-    K --> L[Push to Remote `dev`];
+    K --> L[Push to Remote dev];
     L --> A;
 ```
 
