@@ -38,24 +38,49 @@ Install all development dependencies with the following command:
 pip install -r requirements-dev.txt
 ```
 
-### Step 4: Configure Environment Variables
+### Step 4: Environment Variable Configuration
 
-Copy the example environment file and fill in your credentials.
+The application is configured via environment variables, which are loaded from a `.env` file. This allows for a flexible setup without hardcoding credentials or settings.
+
+**Setup**
+
+First, copy the example file:
 ```bash
 cp env_example.txt .env
 ```
-Now, edit the `.env` file to add your Telegram `API_ID` and `API_HASH`.
+Then, edit the `.env` file to set the following variables:
+
+**Required Variables**
+
+- `API_ID`: Your Telegram application ID.
+- `API_HASH`: Your Telegram application hash.
+- `CHANNEL_MAPPINGS_STR`: Defines the source and target dialogs for mirroring. The format is a semicolon-separated list of comma-separated pairs: `SOURCE_ID_1,TARGET_ID_1;SOURCE_ID_2,TARGET_ID_2`.
 
 > **Note:** You can obtain your `API_ID` and `API_HASH` by logging into your Telegram account at [my.telegram.org](https://my.telegram.org) and navigating to the "API development tools" section.
 
-### Optional Environment Variables
+**Optional Variables**
 
-While `API_ID` and `API_HASH` are the only required variables, you can override the default values for other settings by adding them to your `.env` file. This is useful for running the application without needing to activate the virtual environment or pass command-line arguments.
+These variables have default values but can be overridden in your `.env` file for custom behavior.
 
-- `LOG_LEVEL`: Sets the logging level (e.g., `INFO`, `DEBUG`). Default: `INFO`.
-- `SESSION_NAME`: The name of the Telethon session file. Default: `default`.
-- `MAX_CACHE_SIZE`: The maximum number of dialog names to keep in the LRU cache. Default: `100`.
-- `STAT_SAVE_INTERVAL_SECONDS`: How often to save session statistics. Default: `60`.
+- **Application Identity**
+  - `APP_NAME`: The name for the session file. **Default:** `pyTelegramDialogsMirror`.
+  - `DEVICE_MODEL`: The device model reported to Telegram. **Default:** `pyTelegramDialogsMirror`.
+  - `LANG_CODE`: The language code sent to Telegram. **Default:** `ru`.
+
+- **Performance & Rate Limiting**
+  - `SEND_DELAY`: The delay in seconds between sending messages to avoid flooding. **Default:** `0.8`.
+  - `BATCH_SIZE`: The number of messages to fetch in a single batch during history synchronization. **Default:** `150`.
+  - `MAX_CACHE_SIZE`: The maximum number of dialog names to keep in the LRU cache. **Default:** `200`.
+
+- **Network & Retries**
+  - `REQUEST_RETRIES`: The number of times to retry a failed Telegram API request. **Default:** `9`.
+  - `CONNECTION_RETRIES`: The number of times to retry connecting to Telegram. **Default:** `9`.
+  - `RETRY_DELAY`: The delay in seconds between retries. **Default:** `36`.
+  - `AUTO_RECONNECT`: Whether to automatically reconnect if the client is disconnected. **Default:** `True`.
+
+- **Logging**
+  - `LOG_TELETHON_DIFFERENCES`: Whether to log update differences from Telethon. Can be very verbose. **Default:** `True`.
+  - `RECEIVE_UPDATES`: Whether the client should receive updates from Telegram. **Default:** `True`.
 
 ## 2. Commit Message Guidelines
 
