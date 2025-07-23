@@ -50,22 +50,104 @@ Now, edit the `.env` file to add your Telegram `API_ID` and `API_HASH`.
 
 ## 2. Commit Message Guidelines
 
-This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification. This format makes the commit history readable and enables automated changelog generation.
+This project enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. Adhering to this standard is crucial for maintaining a readable and structured Git history, and it is essential for the automated generation of changelogs for each release.
 
-Each commit message should be structured as follows:
+### The Anatomy of a Commit Message
+
+A commit message must be structured as follows:
+
 ```
-<type>[optional scope]: <description>
+<type>(<scope>): <subject>
 
-[optional body]
+<body>
 
-[optional footer]
+<footer>
 ```
 
-- **Type**: Must be one of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, or `chore`.
+- **Header:** The first line, containing the `type`, `scope`, and `subject`. It is mandatory and must not exceed 72 characters.
+- **Body:** An optional, longer description of the changes. It must be separated from the header by a blank line.
+- **Footer:** An optional section for referencing issue numbers or declaring breaking changes.
 
-**Example:**
+### Header Components
+
+#### Type
+
+This defines the category of the change. It must be one of the following:
+
+- **feat:** A new feature for the user.
+- **fix:** A bug fix for the user.
+- **docs:** Changes to documentation only.
+- **style:** Code style changes that do not affect meaning (e.g., formatting, white-space).
+- **refactor:** A code change that neither fixes a bug nor adds a feature.
+- **perf:** A code change that improves performance.
+- **test:** Adding missing tests or correcting existing ones.
+- **chore:** Changes to the build process, auxiliary tools, or other tasks that don't modify src or test files.
+
+#### Scope (Optional)
+
+The scope provides context for the change. It should be a noun describing the part of the codebase affected.
+
+- **Examples:** `forwarder`, `config`, `release`, `versioning`, `deps`
+
+#### Subject
+
+The subject is a concise, imperative-tense summary of the change.
+
+- **Do:** `add support for video messages`
+- **Don't:** `Added support for video messages` or `Adds support for video messages`
+- Keep it short and to the point.
+
+### Body (Optional)
+
+The body is used to explain the *what* and *why* of the change, not the *how*. It should provide context that the code alone cannot.
+
+- Use it to explain the problem, the solution, and any alternatives considered.
+- Use bullet points for longer descriptions.
+
+### Footer (Optional)
+
+- **Breaking Changes:** If your commit introduces a breaking change, the footer must start with `BREAKING CHANGE:`, followed by a description of the change, the justification, and any migration notes.
+- **Referencing Issues:** Close issues by using keywords like `Closes #123`.
+
+### Examples of Good Commit Messages
+
+**A New Feature:**
 ```
-feat(forwarder): add support for forwarding stickers
+feat(synchronizer): add option to sync messages by date range
+
+Implement a new `--since` and `--until` flag for the `copy` command.
+This allows users to perform partial synchronizations instead of having to copy the entire history every time.
+```
+
+**A Bug Fix:**
+```
+fix(forwarder): prevent crash when message has no text
+
+Previously, the application would raise a `TypeError` if a message
+(e.g., a sticker or photo) was received without any text content.
+
+This change adds a check to ensure the message text exists before
+attempting to process it, preventing the crash.
+
+Closes #42
+```
+
+**Documentation Update:**
+```
+docs: overhaul and detail contributing guide
+
+Rewrite the `CONTRIBUTING.md` to provide a comprehensive, step-by-step guide for both new contributors and maintainers.
+```
+
+**A Breaking Change:**
+```
+refactor(config): rename API_ID and API_HASH to TELEGRAM_API_ID and TELEGRAM_API_HASH
+
+BREAKING CHANGE: The environment variables for Telegram API credentials have been renamed to avoid potential conflicts with other libraries.
+
+Users must update their `.env` files:
+- `API_ID` is now `TELEGRAM_API_ID`
+- `API_HASH` is now `TELEGRAM_API_HASH`
 ```
 
 ## 3. The Release Process (For Maintainers)
