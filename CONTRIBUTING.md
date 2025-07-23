@@ -48,6 +48,15 @@ Now, edit the `.env` file to add your Telegram `API_ID` and `API_HASH`.
 
 > **Note:** You can obtain your `API_ID` and `API_HASH` by logging into your Telegram account at [my.telegram.org](https://my.telegram.org) and navigating to the "API development tools" section.
 
+### Optional Environment Variables
+
+While `API_ID` and `API_HASH` are the only required variables, you can override the default values for other settings by adding them to your `.env` file. This is useful for running the application without needing to activate the virtual environment or pass command-line arguments.
+
+- `LOG_LEVEL`: Sets the logging level (e.g., `INFO`, `DEBUG`). Default: `INFO`.
+- `SESSION_NAME`: The name of the Telethon session file. Default: `default`.
+- `MAX_CACHE_SIZE`: The maximum number of dialog names to keep in the LRU cache. Default: `100`.
+- `STAT_SAVE_INTERVAL_SECONDS`: How often to save session statistics. Default: `60`.
+
 ## 2. Commit Message Guidelines
 
 This project enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. Adhering to this standard is crucial for maintaining a readable and structured Git history, and it is essential for the automated generation of changelogs for each release.
