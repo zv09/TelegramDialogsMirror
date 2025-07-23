@@ -46,6 +46,8 @@ cp env_example.txt .env
 ```
 Now, edit the `.env` file to add your Telegram `API_ID` and `API_HASH`.
 
+> **Note:** You can obtain your `API_ID` and `API_HASH` by logging into your Telegram account at [my.telegram.org](https://my.telegram.org) and navigating to the "API development tools" section.
+
 ## 2. Commit Message Guidelines
 
 This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification. This format makes the commit history readable and enables automated changelog generation.
