@@ -4,6 +4,14 @@ First off, thank you for considering contributing! All contributions you make ar
 
 This document provides a comprehensive guide for developers to ensure a smooth and consistent workflow.
 
+## Outline
+
+1.  [Setting Up Your Development Environment](#1-setting-up-your-development-environment)
+2.  [Commit Message Guidelines](#2-commit-message-guidelines)
+3.  [The Release Process (For Maintainers)](#3-the-release-process-for-maintainers)
+4.  [Development Workflow Diagram](#4-development-workflow-diagram)
+5.  [Project Structure](#5-project-structure)
+
 ## 1. Setting Up Your Development Environment
 
 Follow these steps to get your local development environment running.
