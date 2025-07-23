@@ -152,7 +152,21 @@ Users must update their `.env` files:
 
 ## 3. The Release Process (For Maintainers)
 
-Creating a new release involves bumping the version number and creating a GPG-signed Git tag. This process enhances security by allowing users to verify that releases are authentic.
+Creating a new release involves bumping the version number and creating a GPG-signed Git tag. This process is critical for the project's security and integrity.
+
+**Why GPG Signing?**
+
+A GPG signature on a Git tag provides a cryptographic guarantee that the tag was created by a trusted maintainer and that the code has not been altered since it was signed. This allows users of the project to verify the authenticity of a release before they download and run it.
+
+**How it Works with `bump-my-version`**
+
+Our release workflow is streamlined by `bump-my-version`. When you run the `bump-my-version` command:
+1.  It reads the `pyproject.toml` file to determine the current version and how to increment it.
+2.  It automatically updates the version number in the configured files (`VERSION` and `pyproject.toml`).
+3.  It creates a Git commit with these changes.
+4.  Crucially, because `sign_tags = true` is set in our configuration, it instructs Git to create a new tag and sign it using the GPG key you have configured in your local Git environment.
+
+This means that the entire release process is handled by a single command, ensuring consistency and security.
 
 Only project maintainers should perform these steps.
 
