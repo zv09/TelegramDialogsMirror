@@ -6,7 +6,7 @@ import platform
 import sys
 
 def get_app_version() -> str:
-    with open("versioning/pyproject.toml", "r") as f:
+    with open("pyproject.toml", "r") as f:
         pyproject_data = toml.load(f)
     return pyproject_data["tool"]["bumpversion"]["current_version"]
 

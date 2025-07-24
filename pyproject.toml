@@ -17,7 +17,7 @@ commit_args = "-a"
 filename = "VERSION"
 
 [[tool.bumpversion.files]]
-filename = "versioning/pyproject.toml"
+filename = "pyproject.toml"
 search = 'current_version = "{current_version}"'
 replace = 'current_version = "{new_version}"'
 

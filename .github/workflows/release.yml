@@ -39,7 +39,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add CHANGELOG.md versioning/pyproject.toml
+          git add CHANGELOG.md pyproject.toml
           git commit -m "chore(release): v${{ steps.release.outputs.version }}"
           git tag "v${{ steps.release.outputs.version }}"
 
