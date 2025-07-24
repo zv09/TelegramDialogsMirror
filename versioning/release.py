@@ -9,18 +9,24 @@ class ReleaseError(Exception):
     pass
 
 class ReleaseManager:
-    def __init__(self, version_part: str):
+    def __init__(self, version_part: str, dry_run: bool = False):
         self.version_part = version_part
+        self.dry_run = dry_run
         self.original_cwd = os.getcwd()
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    def _run_command(self, command: str, check_error: bool = True, capture_output: bool = False) -> str:
+    def _run_command(self, command: str, check_error: bool = True, capture_output: bool = False, cwd: str = None) -> str:
         """
         Runs a shell command and handles errors.
         Returns stdout if capture_output is True, otherwise None.
         Raises ReleaseError on command failure.
         """
         full_command = command if isinstance(command, str) else ' '.join(command)
+        
+        if self.dry_run:
+            logger.info(f"[DRY RUN] Would execute: {full_command}")
+            return "" # Return empty string for dry run capture_output
+        
         logger.info(f"Executing: {full_command}")
         try:
             result = subprocess.run(
@@ -29,7 +35,7 @@ class ReleaseManager:
                 check=check_error,
                 text=True,
                 capture_output=capture_output,
-                cwd=self.original_cwd # Ensure commands run from original CWD
+                cwd=cwd if cwd else self.original_cwd # Use provided cwd or default to original_cwd
             )
             if capture_output:
                 if result.stdout:
@@ -58,37 +64,47 @@ class ReleaseManager:
     def _bump_version(self):
         """Runs bump-my-version."""
         logger.info("\n--- Bumping version ---")
-        self._run_command(f"bump-my-version bump {self.version_part}")
+        # Pass --dry-run to bump-my-version if our script is in dry_run mode
+        dry_run_flag = "--dry-run" if self.dry_run else ""
+        self._run_command(f"bump-my-version bump {self.version_part} {dry_run_flag}")
 
     def _generate_changelog(self):
         """Generates changelog using changelog_gen.py."""
         logger.info("\n--- Generating changelog ---")
-        # Temporarily change directory to run changelog_gen.py
-        os.chdir(self.script_dir)
-        try:
-            self._run_command("python changelog_gen.py")
-        finally:
-            os.chdir(self.original_cwd) # Always change back
+        pyproject_toml_path = os.path.join(self.original_cwd, "pyproject.toml")
+        # changelog_gen.py doesn't have a dry-run mode, but its output won't be committed if we're in dry_run
+        self._run_command(f"python changelog_gen.py {pyproject_toml_path}", cwd=self.script_dir)
 
     def _stage_changelog(self):
         """Stages changelog.md."""
         logger.info("\n--- Staging changelog.md ---")
-        self._run_command("git add changelog.md")
+        # Only stage if not in dry_run
+        if not self.dry_run:
+            self._run_command("git add changelog.md")
+        else:
+            logger.info("[DRY RUN] Would stage changelog.md")
 
     def _amend_commit(self):
         """Amends the bump-my-version commit with changelog changes."""
         logger.info("\n--- Amending commit with changelog changes ---")
-        self._run_command("git commit --amend --no-edit")
+        # Only amend if not in dry_run
+        if not self.dry_run:
+            self._run_command("git commit --amend --no-edit")
+        else:
+            logger.info("[DRY RUN] Would amend the last commit")
 
     def _push_changes(self):
         """Pushes changes to remote."""
         logger.info("\n--- Pushing changes to remote ---")
-        current_branch = self._run_command("git rev-parse --abbrev-ref HEAD", capture_output=True)
-        self._run_command(f"git push --force-with-lease origin {current_branch} --tags")
+        if not self.dry_run:
+            current_branch = self._run_command("git rev-parse --abbrev-ref HEAD", capture_output=True)
+            self._run_command(f"git push --force-with-lease origin {current_branch} --tags")
+        else:
+            logger.info("[DRY RUN] Would push changes to remote")
 
     def run(self):
         """Orchestrates the release process."""
-        logger.info(f"--- Starting release process for {self.version_part} bump ---")
+        logger.info(f"--- Starting release process for {self.version_part} bump (Dry Run: {self.dry_run}) ---")
         try:
             self._bump_version()
             self._generate_changelog()
@@ -97,11 +113,11 @@ class ReleaseManager:
             self._push_changes()
             logger.info("\n--- Release process complete! ---")
         except ReleaseError as e:
-            logger.error(f"\n--- Release process failed ---")
+            logger.error("\n--- Release process failed ---")
             logger.error(f"Error: {e}")
             sys.exit(1)
         except Exception as e:
-            logger.exception(f"\n--- An unexpected error occurred during release process ---")
+            logger.exception("\n--- An unexpected error occurred during release process ---")
             logger.error(f"Error: {e}")
             sys.exit(1)
 
@@ -114,11 +130,13 @@ def main():
                format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}")
 
     if len(sys.argv) < 2:
-        logger.error("Usage: python versioning/release.py <patch|minor|major>")
+        logger.error("Usage: python versioning/release.py <patch|minor|major> [--dry-run]")
         sys.exit(1)
 
     version_part = sys.argv[1]
-    manager = ReleaseManager(version_part)
+    dry_run = "--dry-run" in sys.argv
+
+    manager = ReleaseManager(version_part, dry_run)
     manager.run()
 
 if __name__ == "__main__":
