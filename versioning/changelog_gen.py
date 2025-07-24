@@ -51,7 +51,7 @@ def update_changelog_file(new_content, current_version):
     """Updates the changelog.md file with new content."""
     changelog_path = "changelog.md"
     today_date = datetime.now().strftime("%Y-%m-%d")
-    new_version_heading = f"## [v{current_version}]\n### {today_date}"
+    new_version_heading = f"## [v{current_version}]\n### {today_date}\n" # Added newline
 
     try:
         with open(changelog_path, "r") as f:
