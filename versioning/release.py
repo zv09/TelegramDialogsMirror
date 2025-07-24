@@ -61,7 +61,7 @@ class ReleaseManager:
             logger.exception(error_message) # Logs exception traceback
             raise ReleaseError(error_message)
 
-    def _check_clean_working_directory():
+    def _check_clean_working_directory(self):
         """Checks if the Git working directory is clean."""
         logger.info("--- Checking for clean working directory ---")
         status_output = self._run_command("git status --porcelain", capture_output=True)
@@ -114,9 +114,12 @@ class ReleaseManager:
 
     def run(self):
         """Orchestrates the release process."""
-        logger.info(f"--- Starting release process for {self.version_part} bump (Dry Run: {self.dry_run}) ---")
+        logger.info(f"--- Starting release process for {self.version_part} bump ---")
+        if self.dry_run:
+            logger.info("--- DRY-RUN MODE: No actual changes will be made to files or Git repository. ---")
+            logger.info("--- This mode simulates commands and reports what *would* happen. ---")
         try:
-            self._check_clean_working_directory() # Add this check here
+            self._check_clean_working_directory()
             self._bump_version()
             self._generate_changelog()
             self._stage_changelog()
