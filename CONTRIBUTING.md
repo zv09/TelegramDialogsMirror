@@ -372,6 +372,34 @@ Push the new commit and the tag to the remote repository. Using `--follow-tags` 
 git push --follow-tags origin dev
 ```
 
+### Versioning Workflow for Developers
+
+This project utilizes an automated versioning and changelog generation workflow, primarily managed on the `dev` branch.
+
+**1. Development on `dev` Branch:**
+   - All new features, bug fixes, and other changes are developed on feature branches and merged into the `dev` branch.
+   - Commit messages **must** adhere to the [Conventional Commits](#2-commit-message-guidelines) specification. This is crucial for automated changelog generation.
+
+**2. Bumping Version on `dev`:**
+   - When the `dev` branch is stable and ready for a new release (e.g., for a patch, minor, or major update), the version bump is performed directly on the `dev` branch.
+   - Use the `versioning/release.py` script to automate this process:
+     ```bash
+     python versioning/release.py <patch|minor|major>
+     ```
+     - This script will:
+       - Execute `bump-my-version` to update `pyproject.toml` and `versioning/VERSION`.
+       - Generate new changelog entries based on recent Conventional Commits using `git-changelog`.
+       - Update the `changelog.md` file in the project root.
+       - Amend the `bump-my-version` commit with the changelog changes, ensuring a single, atomic commit for the release.
+       - Push the `dev` branch and the newly created GPG-signed tag to the remote `origin/dev`.
+
+**3. Merging `dev` to `master` for Releases:**
+   - Once the `dev` branch has been bumped and pushed, and the release is verified, it is merged into the `master` branch.
+   - This merge should typically be a fast-forward merge if no direct commits have been made to `master` since the last release.
+   - After merging, the `master` branch should also be pushed to `origin/master`.
+
+This workflow ensures that `dev` always contains the latest development, and `master` always reflects stable, released versions with corresponding changelog entries and signed tags.
+
 ## 4. Development Workflow Diagram
 
 The following diagram illustrates the typical workflow for contributing to the project, from feature development to release.
