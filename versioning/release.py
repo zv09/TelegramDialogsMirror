@@ -61,6 +61,16 @@ class ReleaseManager:
             logger.exception(error_message) # Logs exception traceback
             raise ReleaseError(error_message)
 
+    def _check_clean_working_directory():
+        """Checks if the Git working directory is clean."""
+        logger.info("--- Checking for clean working directory ---")
+        status_output = self._run_command("git status --porcelain", capture_output=True)
+        if status_output:
+            raise ReleaseError(
+                "Working directory is not clean. Please commit or stash your changes before running the release script."
+            )
+        logger.info("Working directory is clean.")
+
     def _bump_version(self):
         """Runs bump-my-version."""
         logger.info("\n--- Bumping version ---")
@@ -106,6 +116,7 @@ class ReleaseManager:
         """Orchestrates the release process."""
         logger.info(f"--- Starting release process for {self.version_part} bump (Dry Run: {self.dry_run}) ---")
         try:
+            self._check_clean_working_directory() # Add this check here
             self._bump_version()
             self._generate_changelog()
             self._stage_changelog()
@@ -113,11 +124,11 @@ class ReleaseManager:
             self._push_changes()
             logger.info("\n--- Release process complete! ---")
         except ReleaseError as e:
-            logger.error("\n--- Release process failed ---")
+            logger.error(f"\n--- Release process failed ---")
             logger.error(f"Error: {e}")
             sys.exit(1)
         except Exception as e:
-            logger.exception("\n--- An unexpected error occurred during release process ---")
+            logger.exception(f"\n--- An unexpected error occurred during release process ---")
             logger.error(f"Error: {e}")
             sys.exit(1)
 
