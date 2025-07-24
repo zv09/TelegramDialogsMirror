@@ -7,6 +7,13 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/releases/latest)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/tags)
 
+
+## [Support the Project](docs/donations.md) <a name="support"></a>
+
+If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
+
+For more information on how to donate, please see the [Donations page](docs/donations.md).
+
 ## Outline
 
 - [Support the Project](#support)
@@ -14,14 +21,11 @@
 - [Features](#features)
 - [Setup](#setup)
 - [Configuration](#configuration)
+- [Advanced Configuration](#advanced-configuration)
+- [Troubleshooting](#troubleshooting)
 - [Usage](#usage)
+- [Development Workflow Diagram](#development-workflow-diagram)
 - [Contributing](#contributing)
-
-## [Support the Project](docs/donations.md) <a name="support"></a>
-
-If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
-
-For more information on how to donate, please see the [Donations page](docs/donations.md).
 
 ## Overview
 
@@ -89,7 +93,15 @@ The following environment variables can be configured in the `.env` file to fine
 -   `BATCH_SIZE`: The number of messages to process in a single batch during synchronization (`--copy` mode). A smaller batch size can help avoid `FloodWaitError` but may slow down the overall process. Default: `150`.
 -   `MAX_CACHE_SIZE`: The maximum number of dialog (user/channel) names to keep in memory. This is a performance optimization that uses a small amount of memory to avoid repeated lookups for dialog names. A larger size can improve performance if you interact with many different users/channels. Memory usage is minimal: 200 items is ~35KB; 1000 items is ~175KB. Default: `200`.
 
+For developers, more detailed configuration parameters and their implications are discussed in the [Contributing Guidelines](CONTRIBUTING.md#configuration-parameters). Users seeking advanced customization should refer to the developer documentation.
 
+## Advanced Configuration <a name="advanced-configuration"></a>
+
+This section will contain more advanced configuration options. (Content to be added later)
+
+## Troubleshooting <a name="troubleshooting"></a>
+
+This section will contain common issues and their solutions. (Content to be added later)
 
 ### Live Forwarding Mode
 
@@ -118,3 +130,32 @@ This mode will:
 ## Contributing
 
 Contributions are welcome! If you'd like to contribute to the project, please see the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started, the project structure, and the release process.
+
+## Development Workflow Diagram <a name="development-workflow-diagram"></a>
+
+For developers interested in contributing, the following diagram illustrates the typical workflow for integrating changes into the project. More detailed information on each step, including commit message guidelines and the release process, can be found in the [Contributing Guidelines](CONTRIBUTING.md).
+
+```mermaid
+graph TD
+    A[Remote dev Branch] --> B{Fork/Clone Repository};
+    B --> C[Local dev Branch];
+    C --> D[Create Feature Branch];
+    D --> E{Make Changes & Commits};
+    E --> F[Push Feature Branch to Fork];
+    F --> G[Create Pull Request to dev];
+    G --> H{Code Review & Merge Feature to dev};
+    H --> C; %% Merge feature branch into local dev
+    C --> I[Push Local dev to Remote dev];
+    I --> A;
+    A --> J[Maintainer on dev Branch];
+    J --> K(Run bump-my-version);
+    K --> L[New Commit & Signed Tag Created];
+    L --> M[Push to Remote dev];
+    M --> N[Create Pull Request to master (from dev)];
+    N --> O{Code Review & Merge dev to master};
+    O --> P[Maintainer on master Branch];
+    P --> Q[Push to Remote master];
+    Q --> R[Remote master Branch];
+    M --> J; %% Link back to dev branch for next cycle
+    P --> R;
+```
