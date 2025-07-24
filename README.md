@@ -131,31 +131,4 @@ This mode will:
 
 Contributions are welcome! If you'd like to contribute to the project, please see the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started, the project structure, and the release process.
 
-## Development Workflow Diagram <a name="development-workflow-diagram"></a>
 
-For developers interested in contributing, the following diagram illustrates the typical workflow for integrating changes into the project. More detailed information on each step, including commit message guidelines and the release process, can be found in the [Contributing Guidelines](CONTRIBUTING.md).
-
-```mermaid
-graph TD
-    A[Remote dev Branch] --> B{Fork/Clone Repository};
-    B --> C[Local dev Branch];
-    C --> D[Create Feature Branch];
-    D --> E{Make Changes & Commits};
-    E --> F[Push Feature Branch to Fork];
-    F --> G[Create Pull Request to dev];
-    G --> H{Code Review & Merge Feature to dev};
-    H --> C; %% Merge feature branch into local dev
-    C --> I[Push Local dev to Remote dev];
-    I --> A;
-    A --> J[Maintainer on dev Branch];
-    J --> K(Run bump-my-version);
-    K --> L[New Commit & Signed Tag Created];
-    L --> M[Push to Remote dev];
-    M --> N[Create Pull Request to master (from dev)];
-    N --> O{Code Review & Merge dev to master};
-    O --> P[Maintainer on master Branch];
-    P --> Q[Push to Remote master];
-    Q --> R[Remote master Branch];
-    M --> J; %% Link back to dev branch for next cycle
-    P --> R;
-```

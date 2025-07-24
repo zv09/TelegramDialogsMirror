@@ -378,18 +378,29 @@ The following diagram illustrates the typical workflow for contributing to the p
 
 ```mermaid
 graph TD
-    A[Start: Fork/Clone Repository] --> B(Create Feature Branch);
-    B -- Develop & Commit --> C[Feature Branch];
-    C --> D[Push Feature Branch to Fork];
-    D --> E[Create Pull Request to dev];
-    E -- Code Review & Merge --> F[dev Branch];
-
-    F -- Ready for Release --> G(Run bump-my-version);
-    G --> H[New Release Commit & Signed Tag];
-    H --> I[Push dev Branch & Tags];
-    I --> J[Create Pull Request from dev to master];
-    J -- Code Review & Merge --> K[master Branch];
-    K --> L[Push master Branch];
+    A[Remote dev Branch] --> B{Fork/Clone Repository};
+    B --> C[Local dev Branch];
+    C --> D[Create Feature Branch];
+    D --> E{Make Changes & Commits};
+    E --> F[Push Feature Branch to Fork];
+    F --> G[Create Pull Request to dev];
+    G --> H{Code Review & Merge Feature to dev};
+    H --> C
+    %% Merge feature branch into local dev
+    C --> I[Push Local dev to Remote dev];
+    I --> A;
+    A --> J[Maintainer on dev Branch];
+    J --> K(Run bump-my-version);
+    K --> L[New Commit & Signed Tag Created];
+    L --> M[Push to Remote dev];
+    M --> N[Create Pull Request from dev to master];
+    N --> O{Code Review & Merge dev to master};
+    O --> P[Maintainer on master Branch];
+    P --> Q[Push to Remote master];
+    Q --> R[Remote master Branch];
+    M --> J
+    %% Link back to dev branch for next cycle
+    P --> R
 ```
 
 ## 5. Project Structure
