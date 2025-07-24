@@ -374,33 +374,22 @@ git push --follow-tags origin dev
 
 ## 4. Development Workflow Diagram
 
-The following diagram illustrates the typical workflow for contributing to the project.
+The following diagram illustrates the typical workflow for contributing to the project, from feature development to release.
 
 ```mermaid
 graph TD
-    subgraph Contributor Workflow
-        A[Fork/Clone Repository] --> B[Local dev Branch];
-        B --> C[Create Feature Branch];
-        C --> D{Make Changes & Commits};
-        D --> E[Push Feature Branch to Fork];
-        E --> F[Create Pull Request to dev];
-        F --> G{Code Review & Merge Feature to dev};
-        G --> B;
-    end
+    A[Start: Fork/Clone Repository] --> B(Create Feature Branch);
+    B -- Develop & Commit --> C[Feature Branch];
+    C --> D[Push Feature Branch to Fork];
+    D --> E[Create Pull Request to dev];
+    E -- Code Review & Merge --> F[dev Branch];
 
-    subgraph Maintainer Release Workflow
-        H[Maintainer on dev Branch] --> I(Run bump-my-version);
-        I --> J[New Commit & Signed Tag Created];
-        J --> K[Push to Remote dev];
-        K --> L[Create Pull Request to master from dev];
-        L --> M{Code Review & Merge dev to master};
-        M --> N[Maintainer on master Branch];
-        N --> O[Push to Remote master];
-        O --> P[Remote master Branch];
-    end
-
-    F --> H;
-    K --> H;
+    F -- Ready for Release --> G(Run bump-my-version);
+    G --> H[New Release Commit & Signed Tag];
+    H --> I[Push dev Branch & Tags];
+    I --> J[Create Pull Request from dev to master];
+    J -- Code Review & Merge --> K[master Branch];
+    K --> L[Push master Branch];
 ```
 
 ## 5. Project Structure
