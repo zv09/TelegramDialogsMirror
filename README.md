@@ -6,6 +6,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/releases/latest)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/tags)
+[![Visits Badge](https://komarev.com/ghpvc/?username=zv09&style=flat-square&color=blue)](https://github.com/zv09/pyTelegramDialogsMirror)
 
 
 ## [Support the Project](docs/donations.md) <a name="support"></a>
