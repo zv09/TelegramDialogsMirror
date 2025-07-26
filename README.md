@@ -1,19 +1,41 @@
 # Telegram Dialogs Mirror
 
-[![Donate](https://img.shields.io/badge/Donate-Support%20Project-gold.svg)](docs/donations.md)
-![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/releases/latest)
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror)](https://github.com/zv09/TelegramDialogsMirror/tags)
-[![Visits Badge](https://komarev.com/ghpvc/?username=zv09&style=flat-square&color=blue)](https://github.com/zv09/pyTelegramDialogsMirror)
+<p align="center">
+  <a href="https://github.com/zv09/pyTelegramDialogsMirror">
+    <img src="https://komarev.com/ghpvc/?username=zv09&label=Visits&color=ff69b4&style=flat-square" alt="Visits"/>
+  </a>
+  <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python Version"/>
+  <a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"/>
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT"/>
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/zv09/TelegramDialogsMirror/releases/latest">
+    <img src="https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror?color=add8e6" alt="GitHub release (latest by date)"/>
+  </a>
+  <a href="https://github.com/zv09/TelegramDialogsMirror/tags">
+    <img src="https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror?color=add8e6" alt="GitHub tag (latest by date)"/>
+  </a>
+</p>
+<p align="center">
+  <a href="docs/donations.md">
+    <img src="https://img.shields.io/badge/Donate-Support%20Project-gold.svg" alt="Donate"/>
+  </a>
+</p>
 
 
 ## [Support the Project](docs/donations.md) <a name="support"></a>
 
 If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
 
-For more information on how to donate, please see the [Donations page](docs/donations.md).
+- TON and USDT (TON): `UQBayvQUyg8Ks--mVmQVCw0dTbsjIs8TuPgPrShtd0lWt4Pc`
+- USDT (TRC-20): `TEMU7xgvHMKC2VowLzcaDqgVmamzZKwDxL`
+
+**For more information and addresses** on how to donate, please see the [Donations page](docs/donations.md).
+
 
 ## Outline
 
