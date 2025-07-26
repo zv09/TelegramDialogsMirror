@@ -19,6 +19,7 @@
   <a href="https://github.com/zv09/TelegramDialogsMirror/tags">
     <img src="https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror?color=add8e6" alt="GitHub tag (latest by date)"/>
   </a>
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/zv09/TelegramDialogsMirror"/>
 </p>
 <p align="center">
   <a href="docs/donations.md">
