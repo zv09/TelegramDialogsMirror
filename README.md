@@ -31,8 +31,8 @@
 
 If you find this tool useful, please consider supporting its development. Donations help cover server costs and allow for more time to be dedicated to new features and maintenance.
 
-- TON and USDT (TON): `UQBayvQUyg8Ks--mVmQVCw0dTbsjIs8TuPgPrShtd0lWt4Pc`
-- USDT (TRC-20): `TEMU7xgvHMKC2VowLzcaDqgVmamzZKwDxL`
+- <img src="https://cdn.simpleicons.org/ton/0098EA?viewbox=auto" alt="TON" height="20" /> TON or <img src="https://cdn.simpleicons.org/tether/50AF95?viewbox=auto" alt="USDT" height="20" /> USDT (TON): `UQBayvQUyg8Ks--mVmQVCw0dTbsjIs8TuPgPrShtd0lWt4Pc`
+- <img src="https://cdn.simpleicons.org/tether/50AF95?viewbox=auto" alt="USDT" height="20" /> USDT (TRC-20): `TEMU7xgvHMKC2VowLzcaDqgVmamzZKwDxL`
 
 **For more information and addresses** on how to donate, please see the [Donations page](docs/donations.md).
 
