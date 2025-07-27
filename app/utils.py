@@ -9,7 +9,11 @@ from functools import wraps
 from telethon.errors import FloodWaitError, RPCError
 from loguru import logger
 
-def retry_on_telegram_error(max_retries=10, backoff_factor=0.5):
+from config.config import Settings
+
+settings = Settings()
+
+def retry_on_telegram_error(max_retries=settings.MAX_RETRIES, backoff_factor=settings.BACKOFF_FACTOR):
     """A decorator to handle common Telegram API errors with exponential backoff and jitter.
 
     Catches FloodWaitError and waits for the specified time. For other common

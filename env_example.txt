@@ -6,7 +6,7 @@ APP_NAME="pyTelegramDialogsMirror"
 # Optional Telegram client settings
 REQUEST_RETRIES=3
 CONNECTION_RETRIES=3
-RETRY_DELAY=18
+RETRY_DELAY=9
 AUTO_RECONNECT=True
 DEVICE_MODEL="pyTelegramDialogsMirror"
 LANG_CODE=ru
@@ -26,6 +26,10 @@ BATCH_SIZE=150
 # Memory usage is minimal: 200 items is ~35KB; 1000 items is ~175KB.
 MAX_CACHE_SIZE=200
 
+ # Retry and error handling settings
+SKIP_SERVICE_MESSAGES=True 
+MAX_RETRIES=3
+BACKOFF_FACTOR=1.2
 
 # Dialogs|Channel IDs for mirrorin'
 CHANNEL_MAPPINGS_STR="SOURCE_CHANNEL_ID_1,TARGET_CHANNEL_ID_1;SOURCE_CHANNEL_ID_2,TARGET_CHANNEL_ID_2"

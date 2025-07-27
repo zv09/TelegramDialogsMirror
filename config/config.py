@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     BATCH_SIZE: int = 150
     MAX_CACHE_SIZE: int = 200
 
+    # Retry and error handling settings
+    SKIP_SERVICE_MESSAGES: bool = True
+    MAX_RETRIES: int = 5
+    BACKOFF_FACTOR: float = 1.0
+
     # TelegramClient specific settings
     REQUEST_RETRIES: int = 9
     CONNECTION_RETRIES: int = 9

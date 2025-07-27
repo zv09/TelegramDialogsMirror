@@ -5,8 +5,8 @@ from telethon.tl.custom import Button
 from loguru import logger
 
 from app.cache import CacheManager
-
 from app.utils import retry_on_telegram_error
+from config.config import Settings
 
 class MessageSynchronizer:
     """Synchronizes messages between a source and target channel."""
@@ -16,6 +16,7 @@ class MessageSynchronizer:
         self.cache_manager = cache_manager
         self.forwarder = forwarder
         self.stats_manager = stats_manager
+        self.settings = Settings()
 
     def _parse_signature_button(self, message):
         """Parses the signature from an invisible button on a message."""
@@ -109,6 +110,11 @@ class MessageSynchronizer:
                     if shutdown_event.is_set():
                         logger.warning("Shutdown signal received, stopping synchronization.")
                         return
+
+                    if self.settings.SKIP_SERVICE_MESSAGES and isinstance(message, MessageService):
+                        logger.info(f"Skipping service message {message.id} from {source_channel_id}.")
+                        continue
+
                     try:
                         await self.forwarder._send_message(target_channel_id, message, source_channel_id)
                         logger.info(f"Resent message {message.id} from {source_channel_id}.")
