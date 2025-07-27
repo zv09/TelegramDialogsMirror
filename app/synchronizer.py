@@ -48,28 +48,21 @@ class MessageSynchronizer:
             logger.error(f"Failed to fetch initial state for {channel_id}: {e}")
             return []
 
-    @retry_on_telegram_error()
-    async def synchronize(self, source_channel_id: int, target_channel_id: int, shutdown_event: asyncio.Event):
-        logger.info(f"Starting synchronization: {source_channel_id} -> {target_channel_id}")
+    async def analyze_synchronization(self, source_channel_id: int, target_channel_id: int):
+        logger.info("Starting pre-sync analysis...")
 
         source_message_ids = await self._get_source_state(source_channel_id)
         
-        logger.info(f"Fetching live state for destination channel {target_channel_id}.")
-        # Memory optimization: Iterate and store only IDs, not full message objects.
         target_messages_info = []
         async for msg in self.client.iter_messages(target_channel_id):
             sig = self._parse_signature_button(msg)
             original_source_id = sig[1] if sig and sig[0] == source_channel_id else -1
             target_messages_info.append({'original_id': original_source_id, 'target_id': msg.id})
 
-        # Messages are fetched newest to oldest. Reverse to compare from the start.
         source_message_ids.reverse()
         target_messages_info.reverse()
 
         target_original_ids = [info['original_id'] for info in target_messages_info]
-
-        logger.debug(f"Source IDs ({len(source_message_ids)}): {source_message_ids}")
-        logger.debug(f"Target's Original IDs ({len(target_original_ids)}): {target_original_ids}")
 
         divergence_index = 0
         while (divergence_index < len(source_message_ids) and 
@@ -78,56 +71,78 @@ class MessageSynchronizer:
                 break
             divergence_index += 1
 
-        logger.info(f"Divergence found at index {divergence_index}.")
+        messages_to_copy = len(source_message_ids) - divergence_index
+        messages_to_delete = len(target_messages_info) - divergence_index
+
+        return {
+            "source_total": len(source_message_ids),
+            "target_total": len(target_messages_info),
+            "to_copy": messages_to_copy,
+            "to_delete": messages_to_delete,
+        }
+
+    @retry_on_telegram_error()
+    async def synchronize(self, source_channel_id: int, target_channel_id: int, shutdown_event: asyncio.Event):
+        logger.info(f"Executing synchronization: {source_channel_id} -> {target_channel_id}")
+
+        source_message_ids = await self._get_source_state(source_channel_id)
+        target_messages_info = []
+        async for msg in self.client.iter_messages(target_channel_id):
+            sig = self._parse_signature_button(msg)
+            original_source_id = sig[1] if sig and sig[0] == source_channel_id else -1
+            target_messages_info.append({'original_id': original_source_id, 'target_id': msg.id})
+
+        source_message_ids.reverse()
+        target_messages_info.reverse()
+
+        target_original_ids = [info['original_id'] for info in target_messages_info]
+
+        divergence_index = 0
+        while (divergence_index < len(source_message_ids) and 
+               divergence_index < len(target_original_ids)):
+            if source_message_ids[divergence_index] != target_original_ids[divergence_index]:
+                break
+            divergence_index += 1
 
         if divergence_index < len(target_messages_info):
-            num_to_delete = len(target_messages_info) - divergence_index
-            logger.info(f"Target channel has {num_to_delete} incorrect messages. Deleting them.")
-            
             target_msgs_to_delete = [
                 info['target_id'] for info in target_messages_info[divergence_index:] if info['original_id'] != -1
             ]
-            
             if target_msgs_to_delete:
+                logger.info(f"Deleting {len(target_msgs_to_delete)} incorrect messages from target.")
                 self.stats_manager.add_messages_deleted(len(target_msgs_to_delete))
                 await retry_on_telegram_error()(self.client.delete_messages)(target_channel_id, target_msgs_to_delete)
 
-        resend_count = len(source_message_ids) - divergence_index
-        if resend_count > 0:
-            first_msg_id = source_message_ids[divergence_index]
-            logger.info(f"Starting copy from source message ID: {first_msg_id}.")
-            
-            ids_to_resend = source_message_ids[divergence_index:]
+        ids_to_resend = source_message_ids[divergence_index:]
+        if ids_to_resend:
+            logger.info(f"Copying {len(ids_to_resend)} new messages from source.")
             batch_size = self.forwarder.settings.BATCH_SIZE
 
             for i in range(0, len(ids_to_resend), batch_size):
+                if shutdown_event.is_set(): break
                 batch_ids = ids_to_resend[i:i + batch_size]
                 logger.info(f"Processing batch {i//batch_size + 1}/{(len(ids_to_resend) + batch_size - 1)//batch_size}")
                 
                 messages_to_resend = await self.client.get_messages(source_channel_id, ids=batch_ids)
 
                 for message in sorted(filter(None, messages_to_resend), key=lambda m: m.id):
-                    if shutdown_event.is_set():
-                        logger.warning("Shutdown signal received, stopping synchronization.")
-                        return
+                    if shutdown_event.is_set(): break
 
                     if self.settings.SKIP_SERVICE_MESSAGES and isinstance(message, MessageService):
-                        logger.info(f"Skipping service message {message.id} from {source_channel_id}.")
+                        logger.info(f"Skipping service message {message.id}.")
                         continue
 
                     try:
                         await self.forwarder._send_message(target_channel_id, message, source_channel_id)
-                        logger.info(f"Resent message {message.id} from {source_channel_id}.")
+                        logger.info(f"Resent message {message.id}.")
                         self.stats_manager.add_messages_resent(1)
                         await asyncio.sleep(self.forwarder.settings.SEND_DELAY)
                     except Exception as e:
                         logger.error(f"Failed to resend message {message.id}: {e}")
                         self.stats_manager.increment_forward_failure()
                 
-                if shutdown_event.is_set():
-                    logger.warning("Shutdown signal received, stopping synchronization.")
-                    return
-                logger.info("Batch sent. Pausing for 5 seconds...")
-                await asyncio.sleep(5)
+                if i + batch_size < len(ids_to_resend):
+                    logger.info("Batch sent. Pausing for 5 seconds...")
+                    await asyncio.sleep(5)
 
         logger.info(f"Synchronization from {source_channel_id} to {target_channel_id} complete.")

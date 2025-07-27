@@ -86,6 +86,11 @@ These variables have default values but can be overridden in your `.env` file fo
   - `RETRY_DELAY`: The delay in seconds between retries. **Default:** `36`.
   - `AUTO_RECONNECT`: Whether to automatically reconnect if the client is disconnected. **Default:** `True`.
 
+- **Advanced Error Handling & Retries**
+  - `SKIP_SERVICE_MESSAGES`: When `True`, the application will automatically identify and skip forwarding "service messages" (e.g., "User joined," "Group photo updated"). This is highly recommended as these messages have no content to forward and would otherwise cause a `MediaEmptyError`. **Default:** `True`.
+  - `MAX_RETRIES`: The maximum number of times to retry a failed API call (like forwarding a message) before giving up. This applies to recoverable errors like network issues or temporary Telegram problems. **Default:** `5`.
+  - `BACKOFF_FACTOR`: A multiplier that controls the delay between retries. The delay is calculated as `BACKOFF_FACTOR * (2 ** attempt_number)`. A higher factor increases the wait time. For example, with a factor of `1.0`, the delays will be 1s, 2s, 4s, 8s, and so on. **Default:** `1.0`.
+
 - **Logging**
   - `LOG_TELETHON_DIFFERENCES`: Whether to log update differences from Telethon. Can be very verbose. **Default:** `True`.
   - `RECEIVE_UPDATES`: Whether the client should receive updates from Telegram. **Default:** `True`.

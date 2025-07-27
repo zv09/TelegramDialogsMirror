@@ -50,15 +50,34 @@ class Launcher:
         try:
             if self.args.copy:
                 try:
-                    await self.forwarder.client.start()
+                    await self.client.start()
                     for source, target in self.settings.CHANNEL_MAPPINGS:
                         if self.shutdown_event.is_set():
                             break
+                        
+                        analysis = await self.synchronizer.analyze_synchronization(source, target)
+                        
+                        logger.info("\nSynchronization Plan:")
+                        logger.info("---------------------------------")
+                        logger.info(f"Source Dialog ({source}): {analysis['source_total']} total messages")
+                        logger.info(f"Target Dialog ({target}): {analysis['target_total']} total messages")
+                        logger.info("---------------------------------")
+                        logger.info(f"Messages to copy:   {analysis['to_copy']}")
+                        logger.info(f"Messages to delete: {analysis['to_delete']}")
+                        
+                        if analysis['to_copy'] > 0:
+                            estimated_time = (analysis['to_copy'] * self.settings.SEND_DELAY) / 60
+                            logger.info(f"Estimated time:     ~{estimated_time:.1f} minutes")
+
+                        if input("\nProceed with synchronization? [y/N]: ").lower() not in ['y', 'yes']:
+                            logger.warning("Synchronization aborted by user.")
+                            continue
+
                         await self.synchronizer.synchronize(source, target, self.shutdown_event)
                     logger.info("Message synchronization complete.")
                 finally:
-                    if self.forwarder.client.is_connected():
-                        await self.forwarder.client.disconnect()
+                    if self.client.is_connected():
+                        await self.client.disconnect()
             else:
                 await self.forwarder.run(self.shutdown_event, self.synchronizer)
         except (ValueError, TypeError) as e:
