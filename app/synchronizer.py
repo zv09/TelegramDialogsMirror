@@ -51,6 +51,9 @@ class MessageSynchronizer:
     async def analyze_synchronization(self, source_channel_id: int, target_channel_id: int):
         logger.info("Starting pre-sync analysis...")
 
+        source_entity = await self.client.get_entity(source_channel_id)
+        target_entity = await self.client.get_entity(target_channel_id)
+
         source_message_ids = await self._get_source_state(source_channel_id)
         
         target_messages_info = []
@@ -75,6 +78,8 @@ class MessageSynchronizer:
         messages_to_delete = len(target_messages_info) - divergence_index
 
         return {
+            "source_title": source_entity.title,
+            "target_title": target_entity.title,
             "source_total": len(source_message_ids),
             "target_total": len(target_messages_info),
             "to_copy": messages_to_copy,

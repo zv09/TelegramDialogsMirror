@@ -11,9 +11,8 @@ from loguru import logger
 
 from config.config import Settings
 
-settings = Settings()
 
-def retry_on_telegram_error(max_retries=settings.MAX_RETRIES, backoff_factor=settings.BACKOFF_FACTOR):
+def retry_on_telegram_error():
     """A decorator to handle common Telegram API errors with exponential backoff and jitter.
 
     Catches FloodWaitError and waits for the specified time. For other common
@@ -22,8 +21,9 @@ def retry_on_telegram_error(max_retries=settings.MAX_RETRIES, backoff_factor=set
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
+            settings = Settings()
             last_exception = None
-            for attempt in range(max_retries):
+            for attempt in range(settings.MAX_RETRIES):
                 try:
                     return await func(*args, **kwargs)
                 except FloodWaitError as e:
@@ -31,12 +31,12 @@ def retry_on_telegram_error(max_retries=settings.MAX_RETRIES, backoff_factor=set
                     await asyncio.sleep(e.seconds)
                     last_exception = e
                 except (ConnectionError, TimeoutError, RPCError) as e:
-                    wait_time = backoff_factor * (2 ** attempt) + random.uniform(0, 1)
-                    logger.warning(f"Attempt {attempt + 1}/{max_retries} for {func.__name__} failed with {type(e).__name__}. Retrying in {wait_time:.2f}s.")
+                    wait_time = settings.BACKOFF_FACTOR * (2 ** attempt) + random.uniform(0, 1)
+                    logger.warning(f"Attempt {attempt + 1}/{settings.MAX_RETRIES} for {func.__name__} failed with {type(e).__name__}. Retrying in {wait_time:.2f}s.")
                     await asyncio.sleep(wait_time)
                     last_exception = e
             
-            logger.error(f"Function {func.__name__} failed after {max_retries} retries.")
+            logger.error(f"Function {func.__name__} failed after {settings.MAX_RETRIES} retries.")
             raise last_exception
         return wrapper
     return decorator

@@ -149,6 +149,16 @@ This mode will:
 3.  Delete all incorrect messages from the target channel starting from the point of divergence.
 4.  Resend the correct sequence of messages (including all media and system message placeholders) from the source.
 
+### Dry Run Mode (Safe Preview)
+
+To see what the Synchronization Mode *would* do without making any actual changes, use the `--dry-run` (or `-dr`) flag along with `--copy`.
+
+```bash
+python3 main.py --copy --dry-run
+```
+
+This will perform a full analysis, showing you exactly how many messages would be copied and deleted, and then exit without modifying anything. It is highly recommended to run this first to ensure your configuration is correct.
+
 
 
 ## Contributing

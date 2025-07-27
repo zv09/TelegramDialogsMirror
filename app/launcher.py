@@ -5,7 +5,9 @@ This module contains the main application launcher class.
 
 import asyncio
 import signal
+import sys
 from loguru import logger
+from pydantic import ValidationError
 
 from app.arguments import parse_args
 from config.config import Settings
@@ -20,7 +22,14 @@ class Launcher:
 
     def __init__(self):
         self.args = parse_args()
-        self.settings = Settings()
+        try:
+            self.settings = Settings()
+        except ValidationError as e:
+            logger.critical("Configuration Error: A required setting is missing or invalid.")
+            logger.error("Please ensure your .env file is correctly set up.")
+            logger.error(f"Details: {e}")
+            sys.exit(1)
+            
         self.cache_manager = CacheManager()
         self.client = create_telegram_client(self.settings)
         self.forwarder = Forwarder(self.client, self.settings, self.cache_manager, stats_manager)
@@ -41,11 +50,12 @@ class Launcher:
         self._setup_signal_handlers()
 
         if self.args.copy:
-            logger.info("Starting in Synchronization mode (--copy).")
+            if self.args.dry_run:
+                logger.info("Starting in Synchronization Dry Run mode (--copy --dry-run).")
+            else:
+                logger.info("Starting in Synchronization mode (--copy).")
         else:
             logger.info("Starting in Live Forwarding mode.")
-
-        logger.info("Application starting...")
 
         try:
             if self.args.copy:
@@ -59,8 +69,8 @@ class Launcher:
                         
                         logger.info("\nSynchronization Plan:")
                         logger.info("---------------------------------")
-                        logger.info(f"Source Dialog ({source}): {analysis['source_total']} total messages")
-                        logger.info(f"Target Dialog ({target}): {analysis['target_total']} total messages")
+                        logger.info(f"Source: '{analysis['source_title']}' ({source}) - {analysis['source_total']} messages")
+                        logger.info(f"Target: '{analysis['target_title']}' ({target}) - {analysis['target_total']} messages")
                         logger.info("---------------------------------")
                         logger.info(f"Messages to copy:   {analysis['to_copy']}")
                         logger.info(f"Messages to delete: {analysis['to_delete']}")
@@ -68,6 +78,10 @@ class Launcher:
                         if analysis['to_copy'] > 0:
                             estimated_time = (analysis['to_copy'] * self.settings.SEND_DELAY) / 60
                             logger.info(f"Estimated time:     ~{estimated_time:.1f} minutes")
+
+                        if self.args.dry_run:
+                            logger.info("\nDry run complete. No changes were made.")
+                            continue
 
                         if input("\nProceed with synchronization? [y/N]: ").lower() not in ['y', 'yes']:
                             logger.warning("Synchronization aborted by user.")
