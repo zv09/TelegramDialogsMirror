@@ -304,15 +304,15 @@ Use `bump-my-version` to increment the version. The tool will automatically upda
 
 - **For a patch release (e.g., 1.0.0 -> 1.0.1):**
   ```bash
-  bump-my-version patch
+  bump-my-version bump patch
   ```
 - **For a minor release (e.g., 1.0.0 -> 1.1.0):**
   ```bash
-  bump-my-version minor
+  bump-my-version bump minor
   ```
 - **For a major release (e.g., 1.0.0 -> 2.0.0):**
   ```bash
-  bump-my-version major
+  bump-my-version bump major
   ```
 
 ### Step 3: Verifying Tags
