@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import asyncio
 import traceback
 from loguru import logger

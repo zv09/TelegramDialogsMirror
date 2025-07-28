@@ -127,20 +127,34 @@ This section will contain more advanced configuration options. (Content to be ad
 
 This section will contain common issues and their solutions. (Content to be added later)
 
+## Usage
+
 ### Live Forwarding Mode
 
 To start the application in live forwarding mode, which will monitor source channels and forward new messages as they arrive, run:
 
+**On Linux or macOS:**
 ```bash
-python3 main.py
+./main.py
+```
+
+**On Windows:**
+```bash
+python main.py
 ```
 
 ### Synchronization Mode
 
 To run a one-time synchronization that ensures the target channel is a perfect mirror of the source channel, use the `--copy` flag:
 
+**On Linux or macOS:**
 ```bash
-python3 main.py --copy
+./main.py --copy
+```
+
+**On Windows:**
+```bash
+python main.py --copy
 ```
 
 This mode will:
@@ -153,8 +167,14 @@ This mode will:
 
 To see what the Synchronization Mode *would* do without making any actual changes, use the `--dry-run` (or `-dr`) flag along with `--copy`.
 
+**On Linux or macOS:**
 ```bash
-python3 main.py --copy --dry-run
+./main.py --copy --dry-run
+```
+
+**On Windows:**
+```bash
+python main.py --copy --dry-run
 ```
 
 This will perform a full analysis, showing you exactly how many messages would be copied and deleted, and then exit without modifying anything. It is highly recommended to run this first to ensure your configuration is correct.
