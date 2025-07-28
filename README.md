@@ -1,4 +1,4 @@
-# Telegram Dialogs Mirror
+# pyTelegramDialogsMirror
 
 <p align="center">
   <a href="https://github.com/zv09/pyTelegramDialogsMirror">
@@ -13,13 +13,13 @@
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/zv09/TelegramDialogsMirror/releases/latest">
-    <img src="https://img.shields.io/github/v/release/zv09/TelegramDialogsMirror?color=add8e6" alt="GitHub release (latest by date)"/>
+  <a href="https://github.com/zv09/pyTelegramDialogsMirror/releases/latest">
+    <img src="https://img.shields.io/github/v/release/zv09/pyTelegramDialogsMirror?color=add8e6" alt="GitHub release (latest by date)"/>
   </a>
-  <a href="https://github.com/zv09/TelegramDialogsMirror/tags">
-    <img src="https://img.shields.io/github/v/tag/zv09/TelegramDialogsMirror?color=add8e6" alt="GitHub tag (latest by date)"/>
+  <a href="https://github.com/zv09/pyTelegramDialogsMirror/tags">
+    <img src="https://img.shields.io/github/v/tag/zv09/pyTelegramDialogsMirror?color=add8e6" alt="GitHub tag (latest by date)"/>
   </a>
-  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/zv09/TelegramDialogsMirror"/>
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/zv09/pyTelegramDialogsMirror"/>
 </p>
 <p align="center">
   <a href="docs/donations.md">
@@ -73,7 +73,7 @@ This is a Python script that forwards messages from specified source Telegram ch
 
     ```bash
     git clone <repository_url>
-    cd TelegramDialogsMirror
+    cd pyTelegramDialogsMirror
     ```
 
 2.  **Create and activate a virtual environment:**
@@ -102,12 +102,12 @@ This is a Python script that forwards messages from specified source Telegram ch
     ```
     API_ID=YOUR_API_ID
     API_HASH=YOUR_API_HASH
-    APP_NAME=TelegramDialogsMirror
+    APP_NAME=pyTelegramDialogsMirror
     CHANNEL_MAPPINGS_STR="SOURCE_CHANNEL_ID_1,TARGET_CHANNEL_ID_1;SOURCE_CHANNEL_ID_2,TARGET_CHANNEL_ID_2"
     ```
 
     -   `API_ID` and `API_HASH`: Obtain these from [my.telegram.org](https://my.telegram.org/).
-    -   `APP_NAME`: A name for your application session file (e.g., `TelegramDialogsMirror`).
+    -   `APP_NAME`: A name for your application session file (e.g., `pyTelegramDialogsMirror`).
     -   `CHANNEL_MAPPINGS_STR`: A semicolon-separated string of source and target channel ID pairs. For example, `"-100123456789,-100987654321"` would forward messages from channel `-100123456789` to `-100987654321`.
 
 ## Configuration
@@ -164,5 +164,3 @@ This will perform a full analysis, showing you exactly how many messages would b
 ## Contributing
 
 Contributions are welcome! If you'd like to contribute to the project, please see the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started, the project structure, and the release process.
-
-
