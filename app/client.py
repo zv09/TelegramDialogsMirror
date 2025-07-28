@@ -6,10 +6,10 @@ This module handles the creation and configuration of the Telegram client.
 from telethon import TelegramClient
 from config.config import Settings
 
-def create_telegram_client(settings: Settings) -> TelegramClient:
+def create_telegram_client(session_name: str, settings: Settings) -> TelegramClient:
     """Creates, configures, and returns a Telegram client instance."""
     client = TelegramClient(
-        settings.SESSION_NAME,
+        session_name,
         settings.API_ID,
         settings.API_HASH,
         device_model=settings.DEVICE_MODEL,

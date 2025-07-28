@@ -20,4 +20,10 @@ def parse_args():
         action="store_true",
         help="Perform a dry run of the copy mode without making any changes."
     )
+    parser.add_argument(
+        "-s",
+        "--session",
+        type=str,
+        help="Specify a session file to use."
+    )
     return parser.parse_args()

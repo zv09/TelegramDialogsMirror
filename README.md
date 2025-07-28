@@ -179,6 +179,25 @@ python main.py --copy --dry-run
 
 This will perform a full analysis, showing you exactly how many messages would be copied and deleted, and then exit without modifying anything. It is highly recommended to run this first to ensure your configuration is correct.
 
+### Session Management
+
+The application now includes robust session management to handle multiple accounts or session files gracefully.
+
+**Automatic Session Handling:**
+- **No Sessions:** If no `.session` files are found, the application will create a new one using the `APP_NAME` from your `.env` file.
+- **One Session:** If a single `.session` file is found, it will be used automatically.
+- **Multiple Sessions:** If multiple `.session` files are found, you will be prompted to choose which one to use.
+
+**Manual Session Selection:**
+
+You can bypass the automatic selection and specify a session file directly using the `-s` or `--session` flag. The application will look for this file in the `sessions/` directory.
+
+**Example:**
+```bash
+./main.py -s my_other_session
+```
+This command will force the application to use the `sessions/my_other_session.session` file.
+
 
 
 ## Contributing

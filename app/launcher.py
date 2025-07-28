@@ -15,6 +15,7 @@ from app.client import create_telegram_client
 from app.forwarder import Forwarder
 from app.synchronizer import MessageSynchronizer
 from app.cache import CacheManager
+from app.session_manager import SessionManager
 from app.stats import stats_manager
 
 class Launcher:
@@ -31,7 +32,9 @@ class Launcher:
             sys.exit(1)
             
         self.cache_manager = CacheManager()
-        self.client = create_telegram_client(self.settings)
+        session_manager = SessionManager(self.args.session, self.settings.APP_NAME)
+        session_name = session_manager.get_session_name()
+        self.client = create_telegram_client(session_name, self.settings)
         self.forwarder = Forwarder(self.client, self.settings, self.cache_manager, stats_manager)
         self.synchronizer = MessageSynchronizer(self.client, self.cache_manager, self.forwarder, stats_manager)
         self.shutdown_event = asyncio.Event()

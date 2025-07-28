@@ -49,6 +49,4 @@ class Settings(BaseSettings):
                 mappings.append((source, target))
         return mappings
 
-    @property
-    def SESSION_NAME(self):
-        return f"sessions/{self.APP_NAME}"
+    
