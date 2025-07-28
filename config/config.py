@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # Retry and error handling settings
     SKIP_SERVICE_MESSAGES: bool = True
     MAX_RETRIES: int = 5
-    BACKOFF_FACTOR: float = 1.0
+    BACKOFF_FACTOR: float = 0.9
 
     # TelegramClient specific settings
     REQUEST_RETRIES: int = 9
