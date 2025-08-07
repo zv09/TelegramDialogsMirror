@@ -7,7 +7,7 @@ import asyncio
 from collections import OrderedDict
 import pytz
 from telethon import TelegramClient, events
-from telethon.tl.types import MessageMediaWebPage, MessageService
+from telethon.tl.types import MessageMediaWebPage, MessageService, MessageActionPinMessage, MessageActionChatAddUser, MessageActionChatDeleteUser, MessageActionChatJoinedByLink, MessageActionPinMessage, MessageActionChatAddUser, MessageActionChatDeleteUser, MessageActionChatJoinedByLink
 from telethon.tl.custom import Button
 from telethon.utils import get_display_name
 from loguru import logger
@@ -47,12 +47,51 @@ class Forwarder:
 
     @retry_on_telegram_error()
     async def _forward_system_message(self, target_channel_id, message, source_channel_id):
-        """Forwards a system message."""
-        logger.info(f"System message in {source_channel_id}. Forwarding placeholder.")
-        text = f"System Message: {message.text}"
+        """Formats and forwards a system message, making it more descriptive."""
+        action = message.action
+        text = "System Message: "
+
+        if isinstance(action, MessageActionPinMessage):
+            logger.info(f"Pinned message notification in {source_channel_id}. Fetching original message.")
+            pinned_msg = await self.client.get_messages(source_channel_id, ids=action.message_id)
+            if pinned_msg:
+                sender = await pinned_msg.get_sender()
+                sender_name = await self._get_dialog_name(sender.id)
+                header = f"📌 **Message Pinned**\n**From:** {sender_name}"
+                caption = f"{header}\n\n{pinned_msg.text or ''}"
+                signature_data = f"{source_channel_id}.{pinned_msg.id}".encode()
+                signature_button = Button.inline(" ", data=signature_data)
+
+                if pinned_msg.media and not isinstance(pinned_msg.media, MessageMediaWebPage):
+                    await self.client.send_file(target_channel_id, pinned_msg.media, caption=caption, buttons=signature_button, parse_mode='md')
+                else:
+                    await self.client.send_message(target_channel_id, caption, link_preview=True, buttons=signature_button, parse_mode='md')
+            else:
+                logger.warning(f"Could not fetch pinned message {action.message_id} from {source_channel_id}.")
+                await self.client.send_message(target_channel_id, "**System Message:**\n_A message was pinned, but it could not be fetched._", parse_mode='md')
+            return # We have handled the pin action completely
+
+        elif isinstance(action, MessageActionChatAddUser):
+            user = await self.client.get_entity(action.user_id)
+            text = f"➡️ \"{get_display_name(user)}\" joined the chat."
+        elif isinstance(action, MessageActionChatDeleteUser):
+            user = await self.client.get_entity(action.user_id)
+            text = f"⬅️ \"{get_display_name(user)}\" left the chat."
+        elif isinstance(action, MessageActionChatJoinedByLink):
+            user = await self.client.get_entity(action.user_id)
+            inviter = await self.client.get_entity(action.inviter_id)
+            text = f"🔗 \"{get_display_name(user)}\" joined via link from \"{get_display_name(inviter)}\"."
+        elif hasattr(action, 'title'):
+            text = f"✏️ Chat title was changed to \"{action.title}\""
+        elif hasattr(action, 'photo'):
+            text = "🖼️ Chat photo was changed."
+        else:
+            text = "⚙️ An unhandled system message occurred."
+
+        logger.info(f"System message in {source_channel_id}: {text}")
         signature_data = f"{source_channel_id}.{message.id}".encode()
         signature_button = Button.inline(" ", data=signature_data)
-        await self.client.send_message(target_channel_id, text, buttons=signature_button)
+        await self.client.send_message(target_channel_id, f"**System Message:**\n_{text}_", buttons=signature_button, parse_mode='md')
 
     @retry_on_telegram_error()
     async def _forward_regular_message(self, target_channel_id, message, source_channel_id):
