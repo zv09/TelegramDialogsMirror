@@ -52,6 +52,12 @@ class Launcher:
         """The main execution method for the application."""
         self._setup_signal_handlers()
 
+        try:
+            version = self.settings.APP_VERSION
+            logger.info(f"pyTelegramDialogsMirror version: {version}")
+        except AttributeError:
+            logger.warning("Could not determine app version.")
+
         if self.args.copy:
             if self.args.dry_run:
                 logger.info("Starting in Synchronization Dry Run mode (--copy --dry-run).")
