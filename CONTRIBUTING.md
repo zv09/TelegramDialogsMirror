@@ -95,6 +95,14 @@ These variables have default values but can be overridden in your `.env` file fo
   - `LOG_TELETHON_DIFFERENCES`: Whether to log update differences from Telethon. Can be very verbose. **Default:** `True`.
   - `RECEIVE_UPDATES`: Whether the client should receive updates from Telegram. **Default:** `True`.
 
+- **Timezone Configuration**
+  - `TIMEZONE`: Sets the timezone for the datetime displayed in forwarded messages. This allows you to see timestamps in your local time instead of the default UTC. The value can be a standard timezone name (e.g., 'Europe/Moscow') or a UTC offset (e.g., '+03:00').
+    - **Default:** `UTC`
+    - **Examples:**
+      - `TIMEZONE="Europe/Berlin"`
+      - `TIMEZONE="America/New_York"`
+      - `TIMEZONE="+05:30"`
+
 ## 2. Commit Message Guidelines
 
 This project enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. Adhering to this standard is crucial for maintaining a readable and structured Git history, and it is essential for the automated generation of changelogs for each release.
