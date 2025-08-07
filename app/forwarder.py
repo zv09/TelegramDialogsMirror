@@ -68,7 +68,8 @@ class Forwarder:
             tz = pytz.utc
 
         localized_date = message.date.astimezone(tz)
-        header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {localized_date.strftime('%Y-%m-%d %H:%M:%S%z')}"
+        author_details = f"@{sender.username} | {sender_name}" if sender.username else sender_name
+        header = f"ID: {sender.id} | Author: {author_details}\ndatetime: {localized_date.strftime('%Y-%m-%d %H:%M:%S%z')}"
         caption = f"{header}\n\n{message.text or ''}"
         signature_data = f"{source_channel_id}.{message.id}".encode()
         signature_button = Button.inline(" ", data=signature_data)
