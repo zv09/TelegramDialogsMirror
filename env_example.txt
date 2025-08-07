@@ -34,5 +34,9 @@ BACKOFF_FACTOR=1.2
 # Dialogs|Channel IDs for mirrorin'
 CHANNEL_MAPPINGS_STR="SOURCE_CHANNEL_ID_1,TARGET_CHANNEL_ID_1;SOURCE_CHANNEL_ID_2,TARGET_CHANNEL_ID_2"
 
+# Timezone for message timestamps (e.g., 'UTC', 'Europe/Moscow', '+03:00')
+TIMEZONE="UTC"
+
+
 
 

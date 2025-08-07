@@ -3,3 +3,4 @@ pydantic-settings
 loguru
 python-dotenv
 toml
+pytz

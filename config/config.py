@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     LANG_CODE: str = 'ru'
     RECEIVE_UPDATES: bool = True
     LOG_TELETHON_DIFFERENCES: bool = True
+    TIMEZONE: str = "UTC"
 
     @property
     def CHANNEL_MAPPINGS(self) -> List[Tuple[int, int]]:

@@ -5,6 +5,7 @@ This script handles the live forwarding of messages.
 
 import asyncio
 from collections import OrderedDict
+import pytz
 from telethon import TelegramClient, events
 from telethon.tl.types import MessageMediaWebPage, MessageService
 from telethon.tl.custom import Button
@@ -59,8 +60,15 @@ class Forwarder:
         sender = await message.get_sender()
         sender_name = await self._get_dialog_name(sender.id)
         logger.info(f"Forwarding message {message.id} from {source_channel_id} to {target_channel_id}.")
-        
-        header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {message.date.isoformat().replace('T', ' ')}"
+
+        try:
+            tz = pytz.timezone(self.settings.TIMEZONE)
+        except pytz.UnknownTimeZoneError:
+            logger.warning(f"Unknown timezone '{self.settings.TIMEZONE}' in settings, defaulting to UTC.")
+            tz = pytz.utc
+
+        localized_date = message.date.astimezone(tz)
+        header = f"ID: {sender.id} | Author: {sender_name}\ndatetime: {localized_date.strftime('%Y-%m-%d %H:%M:%S%z')}"
         caption = f"{header}\n\n{message.text or ''}"
         signature_data = f"{source_channel_id}.{message.id}".encode()
         signature_button = Button.inline(" ", data=signature_data)
